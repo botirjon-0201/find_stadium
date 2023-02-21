@@ -21,7 +21,7 @@ export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
   @ApiOperation({ summary: `User Registerition` })
-  @ApiResponse({ status: 201, type: User })
+  @ApiResponse({ status: 201, type: User }) // Hammasiga qo'shish kerakmi? Nima beradi?
   @Post('signup')
   registration(
     @Body() createUserDto: CreateUserDto,

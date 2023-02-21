@@ -12,6 +12,7 @@ import { PasswordUserDto } from './dto/password-user.dto';
 
 @Injectable()
 export class UsersService {
+  // Nima vazifani bajaradi?
   constructor(
     @InjectModel(User) private readonly userModel: typeof User,
     private readonly jwtService: JwtService,

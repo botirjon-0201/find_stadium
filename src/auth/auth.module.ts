@@ -6,6 +6,7 @@ import { JwtModule } from '@nestjs/jwt';
 import { User } from 'src/users/models/user.model';
 
 @Module({
+  // Nima vazifani bajaradi? JwtModule shartmi?
   imports: [SequelizeModule.forFeature([User]), JwtModule.register({})],
   controllers: [AuthController],
   providers: [AuthService],
