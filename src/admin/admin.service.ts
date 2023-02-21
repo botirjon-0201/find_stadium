@@ -50,7 +50,8 @@ export class AdminService {
     const { email, password } = loginUserDto;
 
     const admin = await this.adminModel.findOne({ where: { email } });
-    if (!admin) throw new UnauthorizedException(`Email is not correct`);
+    if (!admin)
+      throw new UnauthorizedException(`Email is not correct or not registered`);
 
     const isMatchPass = await bcrypt.compare(password, admin.hashed_password);
     if (!isMatchPass)

@@ -23,7 +23,7 @@ export class AuthService {
 
   async registration(createUserDto: CreateUserDto, res: Response) {
     const user = await this.userModel.findOne({
-      where: { username: createUserDto.username },
+      where: { email: createUserDto.email },
     });
 
     if (user) throw new BadRequestException('Username is already exist!');
@@ -50,7 +50,8 @@ export class AuthService {
     const { email, password } = loginUserDto;
 
     const user = await this.userModel.findOne({ where: { email } });
-    if (!user) throw new UnauthorizedException(`Email is not correct`);
+    if (!user)
+      throw new UnauthorizedException(`Email is not correct or not registered`);
 
     const isMatchPass = await bcrypt.compare(password, user.hashed_password);
     if (!isMatchPass)
