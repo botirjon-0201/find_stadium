@@ -7,19 +7,17 @@ import {
 import { InjectModel } from '@nestjs/sequelize';
 import * as bcrypt from 'bcrypt';
 import { UpdateUserDto } from './dto/update-user.dto';
-import { JwtService } from '@nestjs/jwt';
+// import { JwtService } from '@nestjs/jwt';
 import { PasswordUserDto } from './dto/password-user.dto';
 
 @Injectable()
 export class UsersService {
-  // Nima vazifani bajaradi?
-  constructor(
-    @InjectModel(User) private readonly userModel: typeof User,
-    private readonly jwtService: JwtService,
-  ) {}
+  constructor(@InjectModel(User) private readonly userModel: typeof User) {}
 
   async findAll() {
     const users = await this.userModel.findAll();
+    if (!users) throw new BadRequestException(`No any users`);
+
     const response = { users, message: `All users` };
     return response;
   }
@@ -27,6 +25,7 @@ export class UsersService {
   async findOne(id: number) {
     const user = await this.userModel.findOne({ where: { id } });
     if (!user) throw new UnauthorizedException(`User not found`);
+
     const response = { user, message: `User information` };
     return response;
   }

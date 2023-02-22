@@ -1,26 +1,74 @@
-import { Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
+import { InjectModel } from '@nestjs/sequelize';
 import { CreateStadiumDto } from './dto/create-stadium.dto';
 import { UpdateStadiumDto } from './dto/update-stadium.dto';
+import { Stadium } from './models/stadium.model';
 
 @Injectable()
 export class StadiumsService {
-  create(createStadiumDto: CreateStadiumDto) {
-    return 'This action adds a new stadium';
+  constructor(
+    @InjectModel(Stadium) private readonly stadiumModel: typeof Stadium,
+  ) {}
+
+  async create(createStadiumDto: CreateStadiumDto) {
+    const stadium = await this.stadiumModel.findOne({
+      where: { name: createStadiumDto.name },
+    });
+    if (stadium) throw new BadRequestException('Stadion is already exist!');
+
+    const newStadium = await this.stadiumModel.create(createStadiumDto);
+    const response = {
+      newStadium,
+      message: `New stadium was created`,
+    };
+
+    return response;
   }
 
-  findAll() {
-    return `This action returns all stadiums`;
+  async findAll() {
+    const stadiums = await this.stadiumModel.findAll();
+    if (!stadiums) throw new NotFoundException(`No any stadiums`);
+
+    const response = { stadiums, message: `All stadiums` };
+    return response;
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} stadium`;
+  async findOne(id: number) {
+    const stadium = await this.stadiumModel.findOne({ where: { id } });
+    if (!stadium) throw new NotFoundException(`Stadium not found`);
+
+    const response = { stadium, message: `Stadium information` };
+    return response;
   }
 
-  update(id: number, updateStadiumDto: UpdateStadiumDto) {
-    return `This action updates a #${id} stadium`;
+  async update(id: number, updateStadiumDto: UpdateStadiumDto) {
+    const stadium = await this.stadiumModel.findOne({ where: { id } });
+    if (!stadium) throw new NotFoundException(`Stadium not found`);
+
+    const updatedStadium = await this.stadiumModel.update(
+      { ...updateStadiumDto },
+      {
+        where: { id },
+        returning: true,
+      },
+    );
+    const response = {
+      stadium: updatedStadium[1][0],
+      message: `Stadium updated`,
+    };
+    return response;
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} stadium`;
+  async remove(id: number) {
+    const stadium = await this.stadiumModel.findOne({ where: { id } });
+    if (!stadium) throw new NotFoundException(`Stadium not found`);
+    await this.stadiumModel.destroy({ where: { id } });
+
+    const response = { stadium: id, message: `Stadium deleted` };
+    return response;
   }
 }

@@ -16,8 +16,8 @@ interface StadiumAttrs {
   address: string;
   location: string;
   buildAt: Date;
-  start_time: Date; // ?
-  end_time: Date;
+  start_time: string;
+  end_time: string;
 }
 
 @Table({ tableName: `stadiums` })
@@ -111,7 +111,7 @@ export class Stadium extends Model<Stadium, StadiumAttrs> {
     description: `When the stadium was built`,
   })
   @Column({
-    type: DataType.STRING,
+    type: DataType.DATE,
   })
   buildAt: Date;
 
@@ -120,16 +120,16 @@ export class Stadium extends Model<Stadium, StadiumAttrs> {
     description: `Start time`,
   })
   @Column({
-    type: DataType.DATE,
+    type: DataType.STRING,
   })
-  start_time: Date;
+  start_time: string;
 
   @ApiProperty({
     example: `17-30`,
     description: `End time`,
   })
   @Column({
-    type: DataType.DATE,
+    type: DataType.STRING,
   })
-  end_time: Date;
+  end_time: string;
 }

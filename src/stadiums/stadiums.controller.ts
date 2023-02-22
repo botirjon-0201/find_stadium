@@ -1,32 +1,46 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+} from '@nestjs/common';
 import { StadiumsService } from './stadiums.service';
 import { CreateStadiumDto } from './dto/create-stadium.dto';
 import { UpdateStadiumDto } from './dto/update-stadium.dto';
-
+import { ApiOperation, ApiTags } from '@nestjs/swagger';
+@ApiTags(`Stadiums`)
 @Controller('stadiums')
 export class StadiumsController {
   constructor(private readonly stadiumsService: StadiumsService) {}
 
-  @Post()
+  @ApiOperation({ summary: `Create Stadium` })
+  @Post('create')
   create(@Body() createStadiumDto: CreateStadiumDto) {
     return this.stadiumsService.create(createStadiumDto);
   }
 
+  @ApiOperation({ summary: `Get All Stadiums` })
   @Get()
   findAll() {
     return this.stadiumsService.findAll();
   }
 
+  @ApiOperation({ summary: `Get Stadium` })
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.stadiumsService.findOne(+id);
   }
 
+  @ApiOperation({ summary: `Update Stadium` })
   @Patch(':id')
   update(@Param('id') id: string, @Body() updateStadiumDto: UpdateStadiumDto) {
     return this.stadiumsService.update(+id, updateStadiumDto);
   }
 
+  @ApiOperation({ summary: `Delete Stadium` })
   @Delete(':id')
   remove(@Param('id') id: string) {
     return this.stadiumsService.remove(+id);

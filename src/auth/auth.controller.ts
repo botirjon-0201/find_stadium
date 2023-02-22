@@ -6,10 +6,12 @@ import {
   HttpCode,
   HttpStatus,
   Param,
+  UseGuards,
 } from '@nestjs/common';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { Response } from 'express';
 import { CookieGetter } from 'src/decorators/cookieGetter.decorator';
+import { UserGuard } from 'src/guards/user.guard';
 import { CreateUserDto } from 'src/users/dto/create-user.dto'; // srcdan olyapti
 import { LoginUserDto } from 'src/users/dto/login-user.dto';
 import { User } from 'src/users/models/user.model';
@@ -53,6 +55,7 @@ export class AuthController {
   }
 
   @ApiOperation({ summary: `Refresh Token` })
+  @UseGuards(UserGuard)
   @Post(`:id/refresh`)
   refresh(
     @Param(`id`) id: string,

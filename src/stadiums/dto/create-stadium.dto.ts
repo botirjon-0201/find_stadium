@@ -42,15 +42,15 @@ export class CreateStadiumDto {
     example: `17-00`,
     description: `Start time`,
   })
-  @IsDateString()
+  @IsString()
   @IsNotEmpty()
-  start_time: Date;
+  start_time: string;
 
   @ApiProperty({
     example: `17-30`,
     description: `End time`,
   })
-  @IsDateString()
+  @IsString()
   @IsNotEmpty()
-  end_time: Date;
+  end_time: string;
 }

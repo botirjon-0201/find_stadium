@@ -6,11 +6,14 @@ import {
   Param,
   Delete,
   Put,
+  UseGuards,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { PasswordUserDto } from './dto/password-user.dto';
+import { UserGuard } from 'src/guards/user.guard';
+import { OwnerGuard } from 'src/guards/owner.guard';
 
 @ApiTags(`Users`)
 @Controller('users')
@@ -30,12 +33,14 @@ export class UsersController {
   }
 
   @ApiOperation({ summary: `Update User` })
+  @UseGuards(UserGuard)
   @Patch(':id')
   update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
     return this.usersService.update(+id, updateUserDto);
   }
 
   @ApiOperation({ summary: `Update User Password` })
+  @UseGuards(UserGuard)
   @Put(`:id/password`)
   updatePassword(
     @Param(`id`) id: string,
@@ -44,19 +49,22 @@ export class UsersController {
     return this.usersService.updatePassword(+id, passwordUserDto);
   }
 
-  @ApiOperation({ summary: `IsActive User` })
+  @ApiOperation({ summary: `User Is Active` })
+  @UseGuards(UserGuard)
   @Put(':id/active')
   isActive(@Param('id') id: string) {
     return this.usersService.isActive(+id);
   }
 
-  @ApiOperation({ summary: `IsOwner User` })
+  @ApiOperation({ summary: `User Is Owner` })
+  @UseGuards(OwnerGuard)
   @Put(':id/owner')
-  isCreator(@Param('id') id: string) {
+  isOwner(@Param('id') id: string) {
     return this.usersService.isOwner(+id);
   }
 
   @ApiOperation({ summary: `Delete User` })
+  @UseGuards(UserGuard)
   @Delete(':id')
   remove(@Param('id') id: string) {
     return this.usersService.remove(+id);

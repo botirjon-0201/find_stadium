@@ -10,10 +10,13 @@ import {
   HttpCode,
   HttpStatus,
   Put,
+  UseGuards,
 } from '@nestjs/common';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { Response } from 'express';
 import { CookieGetter } from 'src/decorators/cookieGetter.decorator';
+import { AdminGuard } from 'src/guards/admin.guard';
+import { CreatorGuard } from 'src/guards/creator.guard';
 import { AdminService } from './admin.service';
 import { CreateAdminDto } from './dto/create-admin.dto';
 import { LoginAdminDto } from './dto/login-admin.dto';
@@ -59,6 +62,7 @@ export class AdminController {
   }
 
   @ApiOperation({ summary: `Refresh Token` })
+  @UseGuards(AdminGuard)
   @Post(`:id/refresh`)
   refresh(
     @Param(`id`) id: string,
@@ -81,12 +85,14 @@ export class AdminController {
   }
 
   @ApiOperation({ summary: `Update Admin` })
+  @UseGuards(AdminGuard)
   @Patch(':id')
   update(@Param('id') id: string, @Body() updateAdminDto: UpdateAdminDto) {
     return this.adminService.update(+id, updateAdminDto);
   }
 
   @ApiOperation({ summary: `Update Admin Password` })
+  @UseGuards(AdminGuard)
   @Put(`:id/password`)
   updatePassword(
     @Param(`id`) id: string,
@@ -96,18 +102,21 @@ export class AdminController {
   }
 
   @ApiOperation({ summary: `IsActive Admin` })
+  @UseGuards(AdminGuard)
   @Put(':id/active')
   isActive(@Param('id') id: string) {
     return this.adminService.isActive(+id);
   }
 
   @ApiOperation({ summary: `IsCreator Admin` })
+  @UseGuards(CreatorGuard)
   @Put(':id/creator')
   isCreator(@Param('id') id: string) {
     return this.adminService.isCreator(+id);
   }
 
   @ApiOperation({ summary: `Delete Admin` })
+  @UseGuards(AdminGuard)
   @Delete(':id')
   remove(@Param('id') id: string) {
     return this.adminService.remove(+id);
