@@ -1,8 +1,18 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+} from '@nestjs/common';
 import { UserWalletService } from './user_wallet.service';
 import { CreateUserWalletDto } from './dto/create-user_wallet.dto';
 import { UpdateUserWalletDto } from './dto/update-user_wallet.dto';
+import { ApiTags } from '@nestjs/swagger';
 
+@ApiTags(`User_wallet`)
 @Controller('user-wallet')
 export class UserWalletController {
   constructor(private readonly userWalletService: UserWalletService) {}
@@ -23,7 +33,10 @@ export class UserWalletController {
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateUserWalletDto: UpdateUserWalletDto) {
+  update(
+    @Param('id') id: string,
+    @Body() updateUserWalletDto: UpdateUserWalletDto,
+  ) {
     return this.userWalletService.update(+id, updateUserWalletDto);
   }
 

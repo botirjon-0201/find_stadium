@@ -13,7 +13,6 @@ import { UpdateUserDto } from './dto/update-user.dto';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { PasswordUserDto } from './dto/password-user.dto';
 import { UserGuard } from 'src/guards/user.guard';
-import { OwnerGuard } from 'src/guards/owner.guard';
 
 @ApiTags(`Users`)
 @Controller('users')
@@ -21,12 +20,14 @@ export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
   @ApiOperation({ summary: `Get All Users` })
+  @UseGuards(UserGuard)
   @Get()
   findAll() {
     return this.usersService.findAll();
   }
 
   @ApiOperation({ summary: `Get User` })
+  @UseGuards(UserGuard)
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.usersService.findOne(+id);
@@ -50,14 +51,12 @@ export class UsersController {
   }
 
   @ApiOperation({ summary: `User Is Active` })
-  @UseGuards(UserGuard)
   @Put(':id/active')
   isActive(@Param('id') id: string) {
     return this.usersService.isActive(+id);
   }
 
   @ApiOperation({ summary: `User Is Owner` })
-  @UseGuards(OwnerGuard)
   @Put(':id/owner')
   isOwner(@Param('id') id: string) {
     return this.usersService.isOwner(+id);

@@ -2,12 +2,12 @@ import { User } from './models/user.model';
 import {
   BadRequestException,
   Injectable,
+  NotFoundException,
   UnauthorizedException,
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/sequelize';
 import * as bcrypt from 'bcrypt';
 import { UpdateUserDto } from './dto/update-user.dto';
-// import { JwtService } from '@nestjs/jwt';
 import { PasswordUserDto } from './dto/password-user.dto';
 
 @Injectable()
@@ -16,7 +16,7 @@ export class UsersService {
 
   async findAll() {
     const users = await this.userModel.findAll();
-    if (!users) throw new BadRequestException(`No any users`);
+    if (!users) throw new NotFoundException(`No any users`);
 
     const response = { users, message: `All users` };
     return response;
@@ -70,7 +70,7 @@ export class UsersService {
 
   async isActive(id: number) {
     const user = await this.userModel.findOne({ where: { id } });
-    if (!user) throw new UnauthorizedException(`Admin not found`);
+    if (!user) throw new UnauthorizedException(`User not found`);
 
     const updatedUser = await this.userModel.update(
       { is_active: !user.is_active },
@@ -85,7 +85,7 @@ export class UsersService {
 
   async isOwner(id: number) {
     const user = await this.userModel.findOne({ where: { id } });
-    if (!user) throw new UnauthorizedException(`Admin not found`);
+    if (!user) throw new UnauthorizedException(`User not found`);
 
     const updatedUser = await this.userModel.update(
       { is_owner: !user.is_owner },

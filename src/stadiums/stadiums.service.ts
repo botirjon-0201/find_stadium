@@ -16,7 +16,10 @@ export class StadiumsService {
 
   async create(createStadiumDto: CreateStadiumDto) {
     const stadium = await this.stadiumModel.findOne({
-      where: { name: createStadiumDto.name },
+      where: {
+        name: createStadiumDto.name,
+        category_id: createStadiumDto.category_id,
+      },
     });
     if (stadium) throw new BadRequestException('Stadion is already exist!');
 
@@ -30,7 +33,9 @@ export class StadiumsService {
   }
 
   async findAll() {
-    const stadiums = await this.stadiumModel.findAll();
+    const stadiums = await this.stadiumModel.findAll({
+      include: { all: true, where: { id: 1 } },
+    });
     if (!stadiums) throw new NotFoundException(`No any stadiums`);
 
     const response = { stadiums, message: `All stadiums` };
@@ -38,7 +43,10 @@ export class StadiumsService {
   }
 
   async findOne(id: number) {
-    const stadium = await this.stadiumModel.findOne({ where: { id } });
+    const stadium = await this.stadiumModel.findOne({
+      where: { id },
+      include: { all: true },
+    });
     if (!stadium) throw new NotFoundException(`Stadium not found`);
 
     const response = { stadium, message: `Stadium information` };

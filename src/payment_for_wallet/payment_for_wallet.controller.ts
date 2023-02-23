@@ -1,11 +1,23 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+} from '@nestjs/common';
 import { PaymentForWalletService } from './payment_for_wallet.service';
 import { CreatePaymentForWalletDto } from './dto/create-payment_for_wallet.dto';
 import { UpdatePaymentForWalletDto } from './dto/update-payment_for_wallet.dto';
+import { ApiTags } from '@nestjs/swagger';
 
+@ApiTags(`Payment_for_wallet`)
 @Controller('payment-for-wallet')
 export class PaymentForWalletController {
-  constructor(private readonly paymentForWalletService: PaymentForWalletService) {}
+  constructor(
+    private readonly paymentForWalletService: PaymentForWalletService,
+  ) {}
 
   @Post()
   create(@Body() createPaymentForWalletDto: CreatePaymentForWalletDto) {
@@ -23,7 +35,10 @@ export class PaymentForWalletController {
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updatePaymentForWalletDto: UpdatePaymentForWalletDto) {
+  update(
+    @Param('id') id: string,
+    @Body() updatePaymentForWalletDto: UpdatePaymentForWalletDto,
+  ) {
     return this.paymentForWalletService.update(+id, updatePaymentForWalletDto);
   }
 

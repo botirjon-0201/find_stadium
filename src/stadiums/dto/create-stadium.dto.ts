@@ -1,7 +1,12 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsDateString, IsNotEmpty, IsString } from 'class-validator';
+import { IsDateString, IsNotEmpty, IsNumber, IsString } from 'class-validator';
 
 export class CreateStadiumDto {
+  @ApiProperty({ example: 1, description: `Forign Key` })
+  @IsNotEmpty()
+  @IsNumber()
+  category_id: number;
+
   @ApiProperty({ example: `adminstrator`, description: `adminstrator name` })
   @IsString()
   @IsNotEmpty()
@@ -31,7 +36,7 @@ export class CreateStadiumDto {
   location: string;
 
   @ApiProperty({
-    example: `01.01.2020`,
+    example: `2020-01-01`,
     description: `When the stadium was built`,
   })
   @IsDateString()

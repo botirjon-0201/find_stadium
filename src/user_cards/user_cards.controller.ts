@@ -1,8 +1,18 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+} from '@nestjs/common';
 import { UserCardsService } from './user_cards.service';
 import { CreateUserCardDto } from './dto/create-user_card.dto';
 import { UpdateUserCardDto } from './dto/update-user_card.dto';
+import { ApiTags } from '@nestjs/swagger';
 
+@ApiTags(`User_cards`)
 @Controller('user-cards')
 export class UserCardsController {
   constructor(private readonly userCardsService: UserCardsService) {}
@@ -23,7 +33,10 @@ export class UserCardsController {
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateUserCardDto: UpdateUserCardDto) {
+  update(
+    @Param('id') id: string,
+    @Body() updateUserCardDto: UpdateUserCardDto,
+  ) {
     return this.userCardsService.update(+id, updateUserCardDto);
   }
 

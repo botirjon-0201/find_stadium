@@ -1,8 +1,18 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+} from '@nestjs/common';
 import { StadiumTimesService } from './stadium_times.service';
 import { CreateStadiumTimeDto } from './dto/create-stadium_time.dto';
 import { UpdateStadiumTimeDto } from './dto/update-stadium_time.dto';
+import { ApiTags } from '@nestjs/swagger';
 
+@ApiTags(`Stadium_times`)
 @Controller('stadium-times')
 export class StadiumTimesController {
   constructor(private readonly stadiumTimesService: StadiumTimesService) {}
@@ -23,7 +33,10 @@ export class StadiumTimesController {
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateStadiumTimeDto: UpdateStadiumTimeDto) {
+  update(
+    @Param('id') id: string,
+    @Body() updateStadiumTimeDto: UpdateStadiumTimeDto,
+  ) {
     return this.stadiumTimesService.update(+id, updateStadiumTimeDto);
   }
 

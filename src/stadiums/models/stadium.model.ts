@@ -1,5 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import {
+  BelongsTo,
   Column,
   DataType,
   ForeignKey,
@@ -30,12 +31,15 @@ export class Stadium extends Model<Stadium, StadiumAttrs> {
   })
   id: number;
 
-  @ApiProperty({ example: 1, description: `Unique ID` }) // to'liqmas
+  @ApiProperty({ example: 1, description: `Forign Key` })
   @ForeignKey(() => Category)
   @Column({
     type: DataType.BIGINT,
   })
   category_id: number;
+
+  @BelongsTo(() => Category)
+  category: Category;
 
   @ApiProperty({ example: 1, description: `Forign Key` }) // Savol bor
   @ForeignKey(() => User)
