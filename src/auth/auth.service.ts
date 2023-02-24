@@ -12,6 +12,8 @@ import { InjectModel } from '@nestjs/sequelize';
 import { Response } from 'express';
 import { CreateUserDto } from 'src/users/dto/create-user.dto';
 import { LoginUserDto } from 'src/users/dto/login-user.dto';
+import { v4 as uuidv4 } from 'uuid';
+import { MailService } from 'src/mail/mail.service';
 
 @Injectable()
 export class AuthService {
@@ -19,20 +21,19 @@ export class AuthService {
   constructor(
     @InjectModel(User) private readonly userModel: typeof User,
     private readonly jwtService: JwtService,
+    private readonly mailService: MailService,
   ) {}
 
   async registration(createUserDto: CreateUserDto, res: Response) {
     const user = await this.userModel.findOne({
       where: { email: createUserDto.email },
     });
-
     if (user) throw new BadRequestException('Username is already exist!');
 
     if (createUserDto.password !== createUserDto.confirm_password)
       throw new BadRequestException('Passwords is not match');
 
     const hashed_password = await bcrypt.hash(createUserDto.password, 7);
-
     const newUser = await this.userModel.create({
       ...createUserDto,
       hashed_password,
@@ -84,8 +85,9 @@ export class AuthService {
     const tokens = await this.getTokens(user.id, user.is_active, user.is_owner);
     const hashed_refresh_token = await bcrypt.hash(tokens.refresh_token, 7);
 
+    const uniqueKey: string = uuidv4();
     const updatedUser = await this.userModel.update(
-      { hashed_refresh_token },
+      { hashed_refresh_token, activation_link: uniqueKey },
       { where: { id: user.id }, returning: true },
     );
 
@@ -93,6 +95,7 @@ export class AuthService {
       maxAge: 15 * 24 * 60 * 60 * 1000,
       httpOnly: true,
     });
+    await this.mailService.sendUserConfirmation(updatedUser[1][0]);
 
     const response = { message: msg, user: updatedUser[1][0], tokens };
     return response;

@@ -17,8 +17,8 @@ export class StadiumsService {
   async create(createStadiumDto: CreateStadiumDto) {
     const stadium = await this.stadiumModel.findOne({
       where: {
-        name: createStadiumDto.name,
         category_id: createStadiumDto.category_id,
+        name: createStadiumDto.name,
       },
     });
     if (stadium) throw new BadRequestException('Stadion is already exist!');

@@ -12,6 +12,7 @@ interface UserAttrs {
   is_owner: boolean;
   is_active: boolean;
   hashed_refresh_token: string;
+  activation_link: string;
   // scopes: {
   //   withoutPassword: {
   //     attributes: { exclude: ['hashed_password'] };
@@ -117,4 +118,13 @@ export class User extends Model<User, UserAttrs> {
     type: DataType.STRING,
   })
   hashed_refresh_token: string;
+
+  @ApiProperty({
+    example: `link`,
+    description: `activation link`,
+  })
+  @Column({
+    type: DataType.STRING,
+  })
+  activation_link: string;
 }

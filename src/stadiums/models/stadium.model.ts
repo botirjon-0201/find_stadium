@@ -45,8 +45,12 @@ export class Stadium extends Model<Stadium, StadiumAttrs> {
   @ForeignKey(() => User)
   @Column({
     type: DataType.BIGINT,
+    defaultValue: 1
   })
   owner_id: number;
+
+  @BelongsTo(() => User)
+  user: User;
 
   @ApiProperty({ example: `adminstrator`, description: `adminstrator name` })
   @Column({

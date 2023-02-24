@@ -10,9 +10,11 @@ import {
 } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { UpdateUserDto } from './dto/update-user.dto';
-import { ApiOperation, ApiTags } from '@nestjs/swagger';
+import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { PasswordUserDto } from './dto/password-user.dto';
 import { UserGuard } from 'src/guards/user.guard';
+import { AdminGuard } from 'src/guards/admin.guard';
+import { User } from './models/user.model';
 
 @ApiTags(`Users`)
 @Controller('users')
@@ -20,14 +22,12 @@ export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
   @ApiOperation({ summary: `Get All Users` })
-  @UseGuards(UserGuard)
   @Get()
   findAll() {
     return this.usersService.findAll();
   }
 
   @ApiOperation({ summary: `Get User` })
-  @UseGuards(UserGuard)
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.usersService.findOne(+id);
@@ -42,7 +42,7 @@ export class UsersController {
 
   @ApiOperation({ summary: `Update User Password` })
   @UseGuards(UserGuard)
-  @Put(`:id/password`)
+  @Patch(`:id/password`)
   updatePassword(
     @Param(`id`) id: string,
     @Body() passwordUserDto: PasswordUserDto,
@@ -50,10 +50,18 @@ export class UsersController {
     return this.usersService.updatePassword(+id, passwordUserDto);
   }
 
-  @ApiOperation({ summary: `User Is Active` })
-  @Put(':id/active')
-  isActive(@Param('id') id: string) {
-    return this.usersService.isActive(+id);
+  @ApiOperation({ summary: `Activate User` })
+  @ApiResponse({ status: 200, type: [User] })
+  @Get('activate/:link')
+  activate(@Param('link') link: string) {
+    return this.usersService.activate(link);
+  }
+
+  @ApiOperation({ summary: `Deactivate User` })
+  @UseGuards(AdminGuard)
+  @Patch('deactivate/:id')
+  deactivate(@Param('id') id: string) {
+    return this.usersService.deactivate(+id);
   }
 
   @ApiOperation({ summary: `User Is Owner` })
@@ -63,7 +71,7 @@ export class UsersController {
   }
 
   @ApiOperation({ summary: `Delete User` })
-  @UseGuards(UserGuard)
+  @UseGuards(UserGuard || AdminGuard)
   @Delete(':id')
   remove(@Param('id') id: string) {
     return this.usersService.remove(+id);

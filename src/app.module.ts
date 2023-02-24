@@ -22,11 +22,13 @@ import { Category } from './categories/models/category.model';
 import { AuthModule } from './auth/auth.module';
 import * as Joi from 'joi';
 import { Admin } from './admin/models/admin.model';
+import { MailModule } from './mail/mail.module';
 
 @Module({
   imports: [
     ConfigModule.forRoot({
       envFilePath: `.env`,
+      isGlobal: true,
       validationSchema: Joi.object({
         POSTGRES_HOST: Joi.string().required(),
         POSTGRES_PORT: Joi.number().required(),
@@ -61,6 +63,7 @@ import { Admin } from './admin/models/admin.model';
     CommentsModule,
     MediaModule,
     AuthModule,
+    MailModule,
   ],
   controllers: [AppController],
   providers: [AppService],

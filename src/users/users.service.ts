@@ -68,18 +68,41 @@ export class UsersService {
     return response;
   }
 
-  async isActive(id: number) {
+  async activate(link: string) {
+    // const user = await this.userModel.findOne({ where: { id } });
+    // if (!user) throw new UnauthorizedException(`User not found`);
+
+    const updatedUser = await this.userModel.update(
+      { is_active: true },
+      {
+        where: { activation_link: link, is_active: false },
+        returning: true,
+      },
+    );
+
+    const response = {
+      user: updatedUser[1][0],
+      message: `User activate successfully`,
+    };
+    return response;
+  }
+
+  async deactivate(id: number) {
     const user = await this.userModel.findOne({ where: { id } });
     if (!user) throw new UnauthorizedException(`User not found`);
 
     const updatedUser = await this.userModel.update(
-      { is_active: !user.is_active },
+      { is_active: false },
       {
         where: { id },
         returning: true,
       },
     );
-    const response = { user: updatedUser[1][0], message: `User is_active` };
+
+    const response = {
+      user: updatedUser[1][0],
+      message: `User deactivate successfully`,
+    };
     return response;
   }
 
