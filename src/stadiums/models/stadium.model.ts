@@ -4,10 +4,14 @@ import {
   Column,
   DataType,
   ForeignKey,
+  HasMany,
   Model,
   Table,
 } from 'sequelize-typescript';
 import { Category } from 'src/categories/models/category.model';
+import { ComfortStadium } from 'src/comfort_stadium/models/comfort_stadium.model';
+import { District } from 'src/district/models/district.model';
+import { Region } from 'src/region/models/region.model';
 import { User } from 'src/users/models/user.model';
 
 interface StadiumAttrs {
@@ -24,8 +28,10 @@ interface StadiumAttrs {
 @Table({ tableName: `stadiums` })
 export class Stadium extends Model<Stadium, StadiumAttrs> {
   @ApiProperty({ example: 1, description: `Unique ID` })
+  @HasMany(() => ComfortStadium)
+  comfortStadium: ComfortStadium[];
   @Column({
-    type: DataType.INTEGER,
+    type: DataType.BIGINT,
     autoIncrement: true,
     primaryKey: true,
   })
@@ -39,18 +45,18 @@ export class Stadium extends Model<Stadium, StadiumAttrs> {
   category_id: number;
 
   @BelongsTo(() => Category)
-  category: Category;
+  category: Category[];
 
-  @ApiProperty({ example: 1, description: `Forign Key` }) // Savol bor
+  @ApiProperty({ example: 1, description: `Forign Key` })
   @ForeignKey(() => User)
   @Column({
     type: DataType.BIGINT,
-    defaultValue: 1
+    defaultValue: 1,
   })
   owner_id: number;
 
   @BelongsTo(() => User)
-  user: User;
+  user: User[];
 
   @ApiProperty({ example: `adminstrator`, description: `adminstrator name` })
   @Column({
@@ -86,24 +92,24 @@ export class Stadium extends Model<Stadium, StadiumAttrs> {
   address: string;
 
   @ApiProperty({ example: 1, description: `Forign Key` })
-  //   @ForeignKey(()=>Region)
+  @ForeignKey(() => Region)
   @Column({
-    type: DataType.SMALLINT,
+    type: DataType.BIGINT,
   })
   region_id: number;
 
-  @ApiProperty({ example: 1, description: `Forign Key` })
-  //   @ForeignKey(()=>City)
-  @Column({
-    type: DataType.SMALLINT,
-  })
-  city_id: number;
+  @BelongsTo(() => Region)
+  region: Region[];
 
   @ApiProperty({ example: 1, description: `Forign Key` })
+  @ForeignKey(() => District)
   @Column({
     type: DataType.SMALLINT,
   })
   district_id: number;
+
+  @BelongsTo(() => District)
+  district: District[];
 
   @ApiProperty({
     example: `location`,

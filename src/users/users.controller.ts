@@ -5,7 +5,6 @@ import {
   Patch,
   Param,
   Delete,
-  Put,
   UseGuards,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
@@ -51,7 +50,7 @@ export class UsersController {
   }
 
   @ApiOperation({ summary: `Activate User` })
-  @ApiResponse({ status: 200, type: [User] })
+  @ApiResponse({ status: 200, type: [User] }) // array bilan oddiyni nima farqi bor?
   @Get('activate/:link')
   activate(@Param('link') link: string) {
     return this.usersService.activate(link);
@@ -65,7 +64,7 @@ export class UsersController {
   }
 
   @ApiOperation({ summary: `User Is Owner` })
-  @Put(':id/owner')
+  @Patch(':id/owner')
   isOwner(@Param('id') id: string) {
     return this.usersService.isOwner(+id);
   }

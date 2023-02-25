@@ -9,7 +9,6 @@ import {
   Res,
   HttpCode,
   HttpStatus,
-  Put,
   UseGuards,
 } from '@nestjs/common';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
@@ -93,7 +92,7 @@ export class AdminController {
 
   @ApiOperation({ summary: `Update Admin Password` })
   @UseGuards(AdminGuard)
-  @Put(`:id/password`)
+  @Patch(`:id/password`)
   updatePassword(
     @Param(`id`) id: string,
     @Body() passwordAdminDto: PasswordAdminDto,
@@ -103,14 +102,14 @@ export class AdminController {
 
   @ApiOperation({ summary: `IsActive Admin` })
   @UseGuards(AdminGuard)
-  @Put(':id/active')
+  @Patch(':id/active')
   isActive(@Param('id') id: string) {
     return this.adminService.isActive(+id);
   }
 
   @ApiOperation({ summary: `IsCreator Admin` })
   @UseGuards(CreatorGuard)
-  @Put(':id/creator')
+  @Patch(':id/creator')
   isCreator(@Param('id') id: string) {
     return this.adminService.isCreator(+id);
   }

@@ -23,6 +23,14 @@ import { AuthModule } from './auth/auth.module';
 import * as Joi from 'joi';
 import { Admin } from './admin/models/admin.model';
 import { MailModule } from './mail/mail.module';
+import { RegionModule } from './region/region.module';
+import { DistrictModule } from './district/district.module';
+import { ComfortModule } from './comfort/comfort.module';
+import { ComfortStadiumModule } from './comfort_stadium/comfort_stadium.module';
+import { Region } from './region/models/region.model';
+import { District } from './district/models/district.model';
+import { Comfort } from './comfort/models/comfort.model';
+import { ComfortStadium } from './comfort_stadium/models/comfort_stadium.model';
 
 @Module({
   imports: [
@@ -45,9 +53,19 @@ import { MailModule } from './mail/mail.module';
       username: process.env.POSTGRES_USER,
       password: String(process.env.POSTGRES_PASSWORD),
       database: process.env.POSTGRES_DB,
-      models: [Admin, User, Category, Stadium, StadiumTime], // Nima vazifani bajaradi?
+      models: [
+        Admin,
+        User,
+        Category,
+        Stadium,
+        StadiumTime,
+        Region,
+        District,
+        Comfort,
+        ComfortStadium,
+      ],
       autoLoadModels: true,
-      synchronize: true, // Ustozdan so'rash kerak
+      synchronize: true,
       logging: false,
     }),
     UsersModule,
@@ -64,6 +82,10 @@ import { MailModule } from './mail/mail.module';
     MediaModule,
     AuthModule,
     MailModule,
+    RegionModule,
+    DistrictModule,
+    ComfortModule,
+    ComfortStadiumModule,
   ],
   controllers: [AppController],
   providers: [AppService],

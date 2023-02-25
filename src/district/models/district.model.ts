@@ -1,5 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import {
+  BelongsTo,
   Column,
   DataType,
   ForeignKey,
@@ -7,35 +8,41 @@ import {
   Model,
   Table,
 } from 'sequelize-typescript';
+import { Region } from 'src/region/models/region.model';
 import { Stadium } from 'src/stadiums/models/stadium.model';
 
-interface CategoryAttrs {
+interface DistrictAttrs {
   name: string;
 }
 
-@Table({ tableName: `categories` })
-export class Category extends Model<Category, CategoryAttrs> {
+@Table({ tableName: `district` })
+export class District extends Model<District, DistrictAttrs> {
   @ApiProperty({ example: 1, description: `Unique ID` })
   @HasMany(() => Stadium)
   stadium: Stadium[];
-
   @Column({
-    type: DataType.INTEGER,
+    type: DataType.BIGINT,
     autoIncrement: true,
     primaryKey: true,
   })
   id: number;
 
-  @ApiProperty({ example: `category name`, description: `Category name` })
+  @ApiProperty({
+    example: `district`,
+    description: `district name`,
+  })
   @Column({
     type: DataType.STRING,
   })
   name: string;
 
   @ApiProperty({ example: 1, description: `Forign Key` })
-  @ForeignKey(() => Category)
+  @ForeignKey(() => Region)
   @Column({
-    type: DataType.SMALLINT,
+    type: DataType.BIGINT,
   })
-  parent_id: number;
+  region_id: number;
+
+  @BelongsTo(() => Region)
+  region: Region[];
 }
