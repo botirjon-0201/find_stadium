@@ -48,15 +48,15 @@ export class Stadium extends Model<Stadium, StadiumAttrs> {
   category: Category[];
 
   @ApiProperty({ example: 1, description: `Forign Key` })
-  @ForeignKey(() => User)
+  // @ForeignKey(() => User)
   @Column({
     type: DataType.BIGINT,
     defaultValue: 1,
   })
   owner_id: number;
 
-  @BelongsTo(() => User)
-  user: User[];
+  // @BelongsTo(() => User)
+  // user: User[];
 
   @ApiProperty({ example: `adminstrator`, description: `adminstrator name` })
   @Column({

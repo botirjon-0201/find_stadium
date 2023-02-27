@@ -23,7 +23,7 @@ export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
   @ApiOperation({ summary: `User Registerition` })
-  @ApiResponse({ status: 201, type: User }) // Hammasiga qo'shish kerakmi? Nima beradi?
+  @ApiResponse({ status: 201, type: User })
   @Post('signup')
   registration(
     @Body() createUserDto: CreateUserDto,
@@ -48,10 +48,10 @@ export class AuthController {
   @HttpCode(HttpStatus.OK)
   @Post('signout')
   logout(
-    @CookieGetter(`refresh_token`) refreshToken: string,
+    @CookieGetter(`refresh_token`) refresh_token: string,
     @Res({ passthrough: true }) res: Response,
   ) {
-    return this.authService.logout(refreshToken, res);
+    return this.authService.logout(refresh_token, res);
   }
 
   @ApiOperation({ summary: `Refresh Token` })
@@ -59,9 +59,9 @@ export class AuthController {
   @Post(`:id/refresh`)
   refresh(
     @Param(`id`) id: string,
-    @CookieGetter(`refresh_token`) refreshToken: string,
+    @CookieGetter(`refresh_token`) refresh_token: string,
     @Res({ passthrough: true }) res: Response,
   ) {
-    return this.authService.refreshToken(+id, refreshToken, res);
+    return this.authService.refreshToken(+id, refresh_token, res);
   }
 }

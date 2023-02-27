@@ -6,10 +6,10 @@ import {
 
 export const CookieGetter = createParamDecorator(
   async (data: `refresh_token`, context: ExecutionContext): Promise<string> => {
-    const refreshToken = context.switchToHttp().getRequest().cookies[data];
-    if (!refreshToken) {
+    const refresh_token = context.switchToHttp().getRequest().cookies[data];
+    if (!refresh_token) {
       throw new UnauthorizedException(`Token is not found`);
     }
-    return refreshToken;
+    return refresh_token;
   },
 );

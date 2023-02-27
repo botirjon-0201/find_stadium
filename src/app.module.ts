@@ -31,9 +31,22 @@ import { Region } from './region/models/region.model';
 import { District } from './district/models/district.model';
 import { Comfort } from './comfort/models/comfort.model';
 import { ComfortStadium } from './comfort_stadium/models/comfort_stadium.model';
+import { TelegrafModule } from 'nestjs-telegraf';
+import { BotModule } from './bot/bot.module';
+import { BOT_NAME } from './app.constants';
+import { Bot } from './bot/models/bot.model';
+import { OtpModule } from './otp/otp.module';
 
 @Module({
   imports: [
+    TelegrafModule.forRootAsync({
+      botName: BOT_NAME,
+      useFactory: () => ({
+        token: process.env.BOT_TOKEN,
+        middlewares: [],
+        include: [BotModule],
+      }),
+    }),
     ConfigModule.forRoot({
       envFilePath: `.env`,
       isGlobal: true,
@@ -63,6 +76,7 @@ import { ComfortStadium } from './comfort_stadium/models/comfort_stadium.model';
         District,
         Comfort,
         ComfortStadium,
+        Bot,
       ],
       autoLoadModels: true,
       synchronize: true,
@@ -86,6 +100,8 @@ import { ComfortStadium } from './comfort_stadium/models/comfort_stadium.model';
     DistrictModule,
     ComfortModule,
     ComfortStadiumModule,
+    BotModule,
+    OtpModule,
   ],
   controllers: [AppController],
   providers: [AppService],

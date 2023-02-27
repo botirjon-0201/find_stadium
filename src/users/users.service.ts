@@ -41,37 +41,40 @@ export class UsersService {
         returning: true,
       },
     );
-    const response = { user: updatedUser[1][0], message: `User updated` };
+
+    const response = {
+      message: `User updated successfully`,
+      user: updatedUser[1][0],
+    };
     return response;
   }
 
-  async updatePassword(user_id: number, passwordUserDto: PasswordUserDto) {
-    const { password, newPassword, confirm_password } = passwordUserDto;
-
-    const user = await this.userModel.findOne({ where: { id: user_id } });
+  async updatePassword(id: number, passwordUserDto: PasswordUserDto) {
+    const { password, new_password, confirm_new_password } = passwordUserDto;
+    const user = await this.userModel.findOne({ where: { id } });
     if (!user) throw new UnauthorizedException(`User not found`);
 
     const isMatchPass = await bcrypt.compare(password, user.hashed_password);
     if (!isMatchPass)
       throw new UnauthorizedException(`Password is not correct`);
 
-    if (newPassword !== confirm_password)
+    if (new_password !== confirm_new_password)
       throw new BadRequestException(`Password and confirm not match`);
 
-    const hashed_password = await bcrypt.hash(newPassword, 7);
+    const hashed_password = await bcrypt.hash(new_password, 7);
     const updatedUser = await this.userModel.update(
       { hashed_password },
       { where: { id: user.id }, returning: true },
     );
 
-    const response = { user: updatedUser[1][0], message: `password updated` };
+    const response = {
+      message: `Password updated successfully`,
+      user: updatedUser[1][0],
+    };
     return response;
   }
 
   async activate(link: string) {
-    // const user = await this.userModel.findOne({ where: { id } });
-    // if (!user) throw new UnauthorizedException(`User not found`);
-
     const updatedUser = await this.userModel.update(
       { is_active: true },
       {
@@ -81,8 +84,8 @@ export class UsersService {
     );
 
     const response = {
-      user: updatedUser[1][0],
       message: `User activate successfully`,
+      user: updatedUser[1][0],
     };
     return response;
   }
@@ -126,7 +129,7 @@ export class UsersService {
     if (!user) throw new UnauthorizedException(`User not found`);
     await this.userModel.destroy({ where: { id } });
 
-    const response = { user: id, message: `User deleted` };
+    const response = { user: id, message: `User deleted successfully` };
     return response;
   }
 }

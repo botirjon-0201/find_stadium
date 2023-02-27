@@ -8,25 +8,25 @@ import {
 
 export class PasswordUserDto {
   @ApiProperty({
-    example: `password`,
-    description: `User password`,
+    example: `P@$$w0rd`,
+    description: `User Password`,
   })
   @IsNotEmpty()
   @IsString()
   password: string;
 
-  @ApiProperty({ example: `newPassword`, description: `User new password` })
+  @ApiProperty({ example: `P@$$w0rd1`, description: `User New Password` })
   @IsNotEmpty()
   @IsString()
   @MinLength(6)
   @IsStrongPassword()
-  newPassword: string;
+  new_password: string;
 
   @ApiProperty({
-    example: `confirm_password`,
-    description: `Confirm password`,
+    example: `P@$$w0rd1`,
+    description: `Confirm New Password`,
   })
   @IsNotEmpty()
   @IsString()
-  confirm_password: string;
+  confirm_new_password: string;
 }

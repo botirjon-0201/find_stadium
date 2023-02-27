@@ -3,6 +3,7 @@ import {
   IsDateString,
   IsEmail,
   IsNotEmpty,
+  IsOptional,
   IsPhoneNumber,
   IsString,
   IsStrongPassword,
@@ -10,14 +11,14 @@ import {
 } from 'class-validator';
 
 export class CreateUserDto {
-  @ApiProperty({ example: `user name`, description: `User name` })
+  @ApiProperty({ example: `ali`, description: `User Name` })
   @IsNotEmpty()
   @IsString()
   first_name: string;
 
   @ApiProperty({
-    example: `user surname`,
-    description: `User surname`,
+    example: `valiyev`,
+    description: `User Surname`,
   })
   @IsNotEmpty()
   @IsString()
@@ -28,7 +29,16 @@ export class CreateUserDto {
   @IsString()
   username: string;
 
-  @ApiProperty({ example: `password`, description: `User password` })
+  @ApiProperty({
+    example: `user1@mail.uz`,
+    description: `User Email`,
+  })
+  @IsNotEmpty()
+  @IsString()
+  @IsEmail()
+  email: string;
+
+  @ApiProperty({ example: `P@$$w0rd`, description: `User Password` })
   @IsNotEmpty()
   @IsString()
   @MinLength(6)
@@ -36,8 +46,8 @@ export class CreateUserDto {
   password: string;
 
   @ApiProperty({
-    example: `confirm_password`,
-    description: `Confirm password`,
+    example: `P@$$w0rd`,
+    description: `Confirm Password`,
   })
   @IsNotEmpty()
   @IsString()
@@ -46,22 +56,34 @@ export class CreateUserDto {
   confirm_password: string;
 
   @ApiProperty({
-    example: `email1@mail.uz`,
-    description: `User email`,
+    example: `909990909`,
+    description: `User Phone Number`,
   })
-  @IsEmail()
-  email: string;
-
-  @ApiProperty({
-    example: `901234567`,
-    description: `User phone number`,
-  })
+  @IsNotEmpty()
+  @IsString()
   @IsPhoneNumber()
   phone: string;
 
   @ApiProperty({
-    example: `01.01.2000`,
-    description: `User birthday date`,
+    example: `https://t.me/user1`,
+    description: `User Telegram Link`,
+  })
+  @IsNotEmpty()
+  @IsString()
+  telegram_link: string;
+
+  @ApiProperty({
+    example: `user1.img`,
+    description: `User Photo`,
+  })
+  @IsNotEmpty()
+  @IsString()
+  @IsOptional()
+  user_photo: string;
+
+  @ApiProperty({
+    example: `2000-01-01`,
+    description: `User Birthday Date`,
   })
   @IsNotEmpty()
   @IsDateString()
