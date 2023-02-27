@@ -41,7 +41,7 @@ export class UsersController {
 
   @ApiOperation({ summary: `Update User Password` })
   @UseGuards(UserGuard)
-  @Patch(`:id/password`)
+  @Patch(`password/:id`)
   updatePassword(
     @Param(`id`) id: string,
     @Body() passwordUserDto: PasswordUserDto,
@@ -64,7 +64,7 @@ export class UsersController {
   }
 
   @ApiOperation({ summary: `User Is Owner` })
-  @Patch(':id/owner')
+  @Patch('owner/:id')
   isOwner(@Param('id') id: string) {
     return this.usersService.isOwner(+id);
   }

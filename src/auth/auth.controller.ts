@@ -56,7 +56,7 @@ export class AuthController {
 
   @ApiOperation({ summary: `Refresh Token` })
   @UseGuards(UserGuard)
-  @Post(`:id/refresh`)
+  @Post(`refresh/:id`)
   refresh(
     @Param(`id`) id: string,
     @CookieGetter(`refresh_token`) refresh_token: string,
