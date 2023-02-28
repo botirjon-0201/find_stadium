@@ -3,8 +3,8 @@ import {
   BelongsTo,
   Column,
   DataType,
-  ForeignKey,
   HasMany,
+  ForeignKey,
   Model,
   Table,
 } from 'sequelize-typescript';
@@ -45,20 +45,19 @@ export class Stadium extends Model<Stadium, StadiumAttrs> {
   category_id: number;
 
   @BelongsTo(() => Category)
-  category: Category[];
+  category: Category;
 
   @ApiProperty({ example: 1, description: `Forign Key` })
   // @ForeignKey(() => User)
   @Column({
     type: DataType.BIGINT,
-    defaultValue: 1,
   })
   owner_id: number;
 
   // @BelongsTo(() => User)
-  // user: User[];
+  // user: User;
 
-  @ApiProperty({ example: `adminstrator`, description: `adminstrator name` })
+  @ApiProperty({ example: `adminstrator`, description: `Adminstrator Name` })
   @Column({
     type: DataType.STRING,
   })
@@ -66,7 +65,7 @@ export class Stadium extends Model<Stadium, StadiumAttrs> {
 
   @ApiProperty({
     example: `stadium`,
-    description: `stadium name`,
+    description: `Stadium Name`,
   })
   @Column({
     type: DataType.STRING,
@@ -74,8 +73,8 @@ export class Stadium extends Model<Stadium, StadiumAttrs> {
   name: string;
 
   @ApiProperty({
-    example: `volume`,
-    description: `volume`,
+    example: `25x50`,
+    description: `Stadium Volume`,
   })
   @Column({
     type: DataType.STRING,
@@ -83,8 +82,8 @@ export class Stadium extends Model<Stadium, StadiumAttrs> {
   volume: string;
 
   @ApiProperty({
-    example: `address`,
-    description: `stadium address`,
+    example: `Home 1, Street Muqumiy`,
+    description: `Stadium Address`,
   })
   @Column({
     type: DataType.STRING,
@@ -92,28 +91,28 @@ export class Stadium extends Model<Stadium, StadiumAttrs> {
   address: string;
 
   @ApiProperty({ example: 1, description: `Forign Key` })
-  @ForeignKey(() => Region)
+  // // @ForeignKey(() => Region)
   @Column({
     type: DataType.BIGINT,
   })
   region_id: number;
 
-  @BelongsTo(() => Region)
-  region: Region[];
+  // @BelongsTo(() => Region)
+  // region: Region;
 
   @ApiProperty({ example: 1, description: `Forign Key` })
-  @ForeignKey(() => District)
+  // // @ForeignKey(() => District)
   @Column({
-    type: DataType.SMALLINT,
+    type: DataType.BIGINT,
   })
   district_id: number;
 
-  @BelongsTo(() => District)
-  district: District[];
+  // @BelongsTo(() => District)
+  // district: District;
 
   @ApiProperty({
-    example: `location`,
-    description: `stadium location`,
+    example: `41.211841, 69.352723`,
+    description: `Stadium Location`,
   })
   @Column({
     type: DataType.STRING,
@@ -121,8 +120,8 @@ export class Stadium extends Model<Stadium, StadiumAttrs> {
   location: string;
 
   @ApiProperty({
-    example: `01.01.2020`,
-    description: `When the stadium was built`,
+    example: `2020-01-01`,
+    description: `When the Stadium was built`,
   })
   @Column({
     type: DataType.DATE,
@@ -130,7 +129,7 @@ export class Stadium extends Model<Stadium, StadiumAttrs> {
   buildAt: Date;
 
   @ApiProperty({
-    example: `17-00`,
+    example: `07-00`,
     description: `Start time`,
   })
   @Column({
@@ -139,7 +138,7 @@ export class Stadium extends Model<Stadium, StadiumAttrs> {
   start_time: string;
 
   @ApiProperty({
-    example: `17-30`,
+    example: `23-30`,
     description: `End time`,
   })
   @Column({

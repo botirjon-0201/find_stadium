@@ -7,55 +7,68 @@ export class CreateStadiumDto {
   @IsNumber()
   category_id: number;
 
-  @ApiProperty({ example: `adminstrator`, description: `adminstrator name` })
-  @IsString()
+  @ApiProperty({ example: `adminstrator`, description: `Adminstrator Name` })
   @IsNotEmpty()
+  @IsString()
   contact_with: string;
 
-  @ApiProperty({ example: `stadium`, description: `stadium name` })
-  @IsString()
+  @ApiProperty({ example: `stadium`, description: `Stadium Name` })
   @IsNotEmpty()
+  @IsString()
   name: string;
 
-  @ApiProperty({ example: `volume`, description: `volume` })
-  @IsString()
+  @ApiProperty({ example: `25x50`, description: `Stadium Volume` })
   @IsNotEmpty()
+  @IsString()
   volume: string;
 
-  @ApiProperty({ example: `address`, description: `stadium address` })
-  @IsString()
+  @ApiProperty({
+    example: `Home 1, Street Muqumiy`,
+    description: `Stadium Address`,
+  })
   @IsNotEmpty()
+  @IsString()
   address: string;
 
-  @ApiProperty({
-    example: `location`,
-    description: `stadium location`,
-  })
-  @IsString()
+  @ApiProperty({ example: 10, description: `Forign Key` })
   @IsNotEmpty()
+  @IsNumber()
+  region_id: number;
+
+  @ApiProperty({ example: 100, description: `Forign Key` })
+  @IsNotEmpty()
+  @IsNumber()
+  district_id: number;
+
+  @ApiProperty({
+    example: `41.211841, 69.352723`,
+    description: `Stadium Location`,
+  })
+  @IsNotEmpty()
+  @IsString()
   location: string;
 
   @ApiProperty({
     example: `2020-01-01`,
-    description: `When the stadium was built`,
+    description: `When the Stadium was built`,
   })
-  @IsDateString()
   @IsNotEmpty()
+  @IsDateString()
   buildAt: Date;
 
   @ApiProperty({
-    example: `17-00`,
+    example: `07-00`,
     description: `Start time`,
   })
-  @IsString()
   @IsNotEmpty()
+  @IsString()
   start_time: string;
 
   @ApiProperty({
-    example: `17-30`,
+    example: `23-30`,
     description: `End time`,
   })
-  @IsString()
   @IsNotEmpty()
+  @IsString()
   end_time: string;
 }

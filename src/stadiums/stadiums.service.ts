@@ -28,7 +28,6 @@ export class StadiumsService {
       newStadium,
       message: `New stadium was created`,
     };
-
     return response;
   }
 
@@ -60,7 +59,7 @@ export class StadiumsService {
     const updatedStadium = await this.stadiumModel.update(
       { ...updateStadiumDto },
       {
-        where: { id },
+        where: { id }, // category_id ham qo'shish kerakmi?
         returning: true,
       },
     );

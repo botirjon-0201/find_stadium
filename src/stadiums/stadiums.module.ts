@@ -6,7 +6,7 @@ import { SequelizeModule } from '@nestjs/sequelize';
 import { JwtModule } from '@nestjs/jwt';
 
 @Module({
-  imports: [SequelizeModule.forFeature([Stadium]), JwtModule.register({})],
+  imports: [SequelizeModule.forFeature([Stadium]), JwtModule],
   controllers: [StadiumsController],
   providers: [StadiumsService],
 })

@@ -10,13 +10,12 @@ interface RegionAttrs {
 @Table({ tableName: `region` })
 export class Region extends Model<Region, RegionAttrs> {
   @ApiProperty({ example: 1, description: `Unique ID` })
-  @HasMany(() => Stadium)
-  stadium: Stadium[];
-  @HasMany(() => District)
-  district: District[];
+  // @HasMany(() => Stadium)
+  // stadium: Stadium[];
+  // @HasMany(() => District)
+  // district: District[];
   @Column({
     type: DataType.BIGINT,
-    autoIncrement: true,
     primaryKey: true,
   })
   id: number;

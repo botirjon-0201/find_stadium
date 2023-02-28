@@ -28,5 +28,7 @@ export class PasswordUserDto {
   })
   @IsNotEmpty()
   @IsString()
+  @MinLength(6)
+  @IsStrongPassword()
   confirm_new_password: string;
 }

@@ -13,8 +13,8 @@ interface UserAttrs {
   birthday: Date;
   is_owner: boolean;
   is_active: boolean;
-  hashed_refresh_token: string;
   activation_link: string;
+  hashed_refresh_token: string;
 }
 
 @Table({ tableName: `users` })

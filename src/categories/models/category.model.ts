@@ -20,7 +20,7 @@ export class Category extends Model<Category, CategoryAttrs> {
   stadium: Stadium[];
 
   @Column({
-    type: DataType.INTEGER,
+    type: DataType.BIGINT,
     autoIncrement: true,
     primaryKey: true,
   })
@@ -33,7 +33,6 @@ export class Category extends Model<Category, CategoryAttrs> {
   name: string;
 
   @ApiProperty({ example: 1, description: `Forign Key` })
-  @ForeignKey(() => Category)
   @Column({
     type: DataType.SMALLINT,
   })

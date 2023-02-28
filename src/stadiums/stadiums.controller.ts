@@ -20,7 +20,7 @@ export class StadiumsController {
   constructor(private readonly stadiumsService: StadiumsService) {}
 
   @ApiOperation({ summary: `Create Stadium` })
-  @UseGuards(OwnerGuard) // UserGuard ham qo'shish kerakmi?
+  // @UseGuards(OwnerGuard) // UserGuard ham qo'shish kerakmi?
   @Post('create')
   create(@Body() createStadiumDto: CreateStadiumDto) {
     return this.stadiumsService.create(createStadiumDto);
