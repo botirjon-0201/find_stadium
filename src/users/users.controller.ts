@@ -6,6 +6,9 @@ import {
   Param,
   Delete,
   UseGuards,
+  Post,
+  Req,
+  Res,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { UpdateUserDto } from './dto/update-user.dto';
@@ -14,6 +17,9 @@ import { PasswordUserDto } from './dto/password-user.dto';
 import { UserGuard } from 'src/guards/user.guard';
 import { AdminGuard } from 'src/guards/admin.guard';
 import { User } from './models/user.model';
+import { PhoneUserDto } from './dto/phone-user.dto';
+import { VerifyOtpDto } from './dto/verify-otp.dto';
+import { Request, Response } from 'express';
 
 @ApiTags(`Users`)
 @Controller('users')
@@ -74,5 +80,21 @@ export class UsersController {
   @Delete(':id')
   remove(@Param('id') id: string) {
     return this.usersService.remove(+id);
+  }
+
+  @ApiOperation({ summary: `OTP` })
+  @Post('/otp')
+  newOtp(@Body() phoneUserDto: PhoneUserDto) {
+    return this.usersService.newOTP(phoneUserDto);
+  }
+
+  @ApiOperation({ summary: `Verify OTP` })
+  @Post('/verify')
+  verifyOtp(
+    @Body() verifyOtpDto: VerifyOtpDto,
+    @Req() req: Request,
+    @Res({ passthrough: true }) res: Response,
+  ) {
+    return this.usersService.verifyOtp(verifyOtpDto, res);
   }
 }

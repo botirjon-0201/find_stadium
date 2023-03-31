@@ -31,7 +31,7 @@ export class Otp extends Model<Otp, OtpAttrs> {
   @Column({
     type: DataType.DATE,
   })
-  expiration_time: string;
+  expiration_time: Date;
 
   @ApiProperty({
     example: 'false',
@@ -39,6 +39,7 @@ export class Otp extends Model<Otp, OtpAttrs> {
   })
   @Column({
     type: DataType.BOOLEAN,
+    defaultValue: false,
   })
   verified: boolean;
 

@@ -119,9 +119,9 @@ export class BotService {
     }
   }
 
-  async sendOTP(phoneNumber: string, OTP: string): Promise<boolean> {
+  async sendOTP(phone_number: string, OTP: string): Promise<boolean> {
     const user = await this.botModel.findOne({
-      where: { phone_number: '+' + phoneNumber },
+      where: { phone_number },
     });
     if (!user || !user.dataValues.status) return false;
 

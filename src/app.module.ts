@@ -6,7 +6,6 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { UsersModule } from './users/users.module';
 import { StadiumsModule } from './stadiums/stadiums.module';
-import { CategoriesModule } from './categories/categories.module';
 import { StadiumTimesModule } from './stadium_times/stadium_times.module';
 import { CartModule } from './cart/cart.module';
 import { UserCardsModule } from './user_cards/user_cards.module';
@@ -18,7 +17,6 @@ import { CommentsModule } from './comments/comments.module';
 import { MediaModule } from './media/media.module';
 import { Stadium } from './stadiums/models/stadium.model';
 import { StadiumTime } from './stadium_times/models/stadium_time.model';
-import { Category } from './categories/models/category.model';
 import { AuthModule } from './auth/auth.module';
 import * as Joi from 'joi';
 import { Admin } from './admin/models/admin.model';
@@ -36,6 +34,8 @@ import { BotModule } from './bot/bot.module';
 import { BOT_NAME } from './app.constants';
 import { Bot } from './bot/models/bot.model';
 import { OtpModule } from './otp/otp.module';
+import { Category } from './categories/models/category.model';
+import { CategoriesModule } from './categories/categories.module';
 
 @Module({
   imports: [

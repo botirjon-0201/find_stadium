@@ -34,7 +34,7 @@ export class AuthService {
       throw new BadRequestException('Password & confirm password is not match');
 
     const hashed_password = await bcrypt.hash(createUserDto.password, 7);
-    const uniqueKey: string = uuidv4(); 
+    const uniqueKey: string = uuidv4();
     const newUser = await this.userModel.create({
       ...createUserDto,
       hashed_password,

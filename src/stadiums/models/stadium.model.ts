@@ -8,11 +8,11 @@ import {
   Model,
   Table,
 } from 'sequelize-typescript';
-import { Category } from 'src/categories/models/category.model';
 import { ComfortStadium } from 'src/comfort_stadium/models/comfort_stadium.model';
 import { District } from 'src/district/models/district.model';
 import { Region } from 'src/region/models/region.model';
 import { User } from 'src/users/models/user.model';
+import { Category } from '../../categories/models/category.model';
 
 interface StadiumAttrs {
   contact_with: string;

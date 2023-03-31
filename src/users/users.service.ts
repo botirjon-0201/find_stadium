@@ -1,6 +1,8 @@
 import { User } from './models/user.model';
 import {
   BadRequestException,
+  HttpException,
+  HttpStatus,
   Injectable,
   NotFoundException,
   UnauthorizedException,
@@ -9,10 +11,26 @@ import { InjectModel } from '@nestjs/sequelize';
 import * as bcrypt from 'bcrypt';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { PasswordUserDto } from './dto/password-user.dto';
+import { PhoneUserDto } from './dto/phone-user.dto';
+import * as otpGenaretor from 'otp-generator';
+import { BotService } from 'src/bot/bot.service';
+import { addMinutesToDate } from 'src/helpers/addMinutes';
+import { Otp } from 'src/otp/models/otp.model';
+import { Op } from 'sequelize';
+import { v4 } from 'uuid';
+import { dates, decode, encode } from 'src/helpers/crypto';
+import { VerifyOtpDto } from './dto/verify-otp.dto';
+import { Response } from 'express';
+import { AuthService } from 'src/auth/auth.service';
 
 @Injectable()
 export class UsersService {
-  constructor(@InjectModel(User) private readonly userModel: typeof User) {}
+  constructor(
+    @InjectModel(User) private readonly userModel: typeof User,
+    @InjectModel(Otp) private readonly otpModel: typeof Otp,
+    private readonly botService: BotService,
+    private readonly authService: AuthService,
+  ) {}
 
   async findAll() {
     const users = await this.userModel.findAll();
@@ -131,5 +149,105 @@ export class UsersService {
 
     const response = { user: id, message: `User deleted successfully` };
     return response;
+  }
+
+  async newOTP(phoneUserDto: PhoneUserDto) {
+    const phone_number = phoneUserDto.phone;
+    const user = await this.userModel.findOne({
+      where: { phone: phone_number },
+    });
+    if (!user)
+      throw new NotFoundException('User not found, please, first register!');
+
+    const otp = otpGenaretor.generate(4, {
+      upperCaseAlphabets: false,
+      lowerCaseAlphabets: false,
+      specialChars: false,
+    });
+
+    const isSend = await this.botService.sendOTP(phone_number, otp);
+    if (!isSend)
+      throw new HttpException(
+        'First register from the bot',
+        HttpStatus.BAD_REQUEST,
+      );
+
+    const now = new Date();
+    const expiration_time = addMinutesToDate(now, 5);
+
+    await this.otpModel.destroy({
+      where: { [Op.and]: [{ check: phone_number }, { verified: false }] },
+    });
+
+    const new_otp = await this.otpModel.create({
+      id: v4(),
+      otp,
+      expiration_time,
+      check: phone_number,
+    });
+
+    const details = {
+      timestamp: now,
+      check: phone_number,
+      success: true,
+      message: 'OTP send to user',
+      otp_id: new_otp.id,
+    };
+
+    const encoded = await encode(JSON.stringify(details));
+    return { status: 'Success', Details: encoded };
+  }
+
+  async verifyOtp(
+    verifyOtpDto: VerifyOtpDto,
+    // headers: { 'user-agent': string },
+    res: Response,
+  ) {
+    const { verification_key, otp, check } = verifyOtpDto;
+    const currentDate = new Date();
+    const decoded = await decode(verification_key);
+    const obj = JSON.parse(decoded);
+    const check_obj = obj.check;
+
+    if (check_obj !== check)
+      throw new BadRequestException('OTP has not been sent to this number');
+
+    const result = await this.otpModel.findOne({
+      where: { id: obj.otp_id },
+      include: { all: true },
+    });
+
+    if (result !== null) {
+      if (!result.verified) {
+        if (dates.compare(result.expiration_time, currentDate)) {
+          if (otp === result.otp) {
+            const user = await this.userModel.findOne({
+              where: { phone: check },
+            });
+            if (user) {
+              const updatedUser = await this.userModel.update(
+                { is_owner: true },
+                { where: { id: user.id }, returning: true },
+              );
+              const response = {
+                message: `User have done owner`,
+                ...(await this.authService.getResponse(updatedUser[1][0], res)),
+              };
+              return response;
+            } else {
+              throw new BadRequestException('Please, first register!');
+            }
+          } else {
+            throw new BadRequestException('OTP is not match');
+          }
+        } else {
+          throw new BadRequestException('OTP expired in');
+        }
+      } else {
+        throw new BadRequestException('This OTP is already used');
+      }
+    } else {
+      throw new NotFoundException('No such user found');
+    }
   }
 }

@@ -44,7 +44,6 @@ export class StadiumsService {
   async findOne(id: number) {
     const stadium = await this.stadiumModel.findOne({
       where: { id },
-      include: { all: true },
     });
     if (!stadium) throw new NotFoundException(`Stadium not found`);
 
