@@ -16,7 +16,7 @@ async function start() {
       .addTag(`NodeJS, NestJS, Postgres, Sequelize,JWT, Swagger`)
       .build();
     const document = SwaggerModule.createDocument(app, config);
-    SwaggerModule.setup(`/docs`, app, document);
+    SwaggerModule.setup(`api/find-stadium`, app, document);
 
     app.setGlobalPrefix(`api`);
     app.useGlobalPipes(new ValidationPipe());
