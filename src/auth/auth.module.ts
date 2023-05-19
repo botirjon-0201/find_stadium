@@ -9,7 +9,10 @@ import { MailModule } from 'src/mail/mail.module';
 @Module({
   imports: [
     SequelizeModule.forFeature([User]),
-    JwtModule.register({}),
+    JwtModule.register({
+      secret: process.env.ACCESS_TOKEN_KEY,
+      signOptions: { expiresIn: process.env.ACCESS_TOKEN_TIME },
+    }),
     MailModule,
   ],
   controllers: [AuthController],

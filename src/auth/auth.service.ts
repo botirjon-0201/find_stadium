@@ -5,7 +5,7 @@ import {
   Injectable,
   UnauthorizedException,
 } from '@nestjs/common';
-import * as bcrypt from 'bcrypt';
+import { compare, genSalt, hash } from 'bcrypt';
 import { User } from 'src/users/models/user.model';
 import { JwtService } from '@nestjs/jwt';
 import { InjectModel } from '@nestjs/sequelize';
@@ -17,114 +17,138 @@ import { MailService } from 'src/mail/mail.service';
 
 @Injectable()
 export class AuthService {
-  // Nima vazifani bajaradi?
   constructor(
     @InjectModel(User) private readonly userModel: typeof User,
     private readonly jwtService: JwtService,
     private readonly mailService: MailService,
   ) {}
 
-  async registration(createUserDto: CreateUserDto, res: Response) {
-    const user = await this.userModel.findOne({
-      where: { email: createUserDto.email },
-    });
-    if (user) throw new BadRequestException('Username is already exist!');
+  async signup(createUserDto: CreateUserDto, res: Response) {
+    const { email, password, confirm_password } = createUserDto;
 
-    if (createUserDto.password !== createUserDto.confirm_password)
+    const existUser = await this.isExistUser({ email });
+    if (existUser)
+      throw new BadRequestException('User with that email is already exist!');
+
+    if (password !== confirm_password)
       throw new BadRequestException('Password & confirm password is not match');
 
-    const hashed_password = await bcrypt.hash(createUserDto.password, 7);
+    const salt = await genSalt(10);
+    const hashedPassword = await hash(password, salt);
     const uniqueKey: string = uuidv4();
+
     const newUser = await this.userModel.create({
       ...createUserDto,
-      hashed_password,
+      password: hashedPassword,
       activation_link: uniqueKey,
     });
 
     const response = {
-      message: `User have registered`,
       ...(await this.getResponse(newUser, res)),
+      message: 'Check your email, a confirmation message has been sent',
     };
-    await this.mailService.sendUserConfirmation(response.user);
+
+    const sendMailData = {
+      activation_link: newUser.activation_link,
+      email: newUser.email,
+      first_name: newUser.first_name,
+    };
+    await this.mailService.sendUserConfirmation(sendMailData);
+
     return response;
   }
 
-  async login(loginUserDto: LoginUserDto, res: Response) {
+  async signin(loginUserDto: LoginUserDto, res: Response) {
     const { email, password } = loginUserDto;
-    const user = await this.userModel.findOne({ where: { email } });
-    if (!user)
-      throw new UnauthorizedException(`Email is wrong or User not registered`);
 
-    const isMatchPass = await bcrypt.compare(password, user.hashed_password);
+    const user = await this.isExistUser({ email });
+    if (!user)
+      throw new UnauthorizedException('Email is wrong or User not registered');
+
+    const isMatchPass = await compare(password, user.password);
     if (!isMatchPass)
-      throw new UnauthorizedException(`Password is not correct`);
+      throw new BadRequestException("Password isn't correct, please try again");
 
     const response = {
-      message: `User have logged in`,
       ...(await this.getResponse(user, res)),
+      message: 'User have signed in successfully!',
     };
     return response;
   }
 
-  async logout(refresh_token: string, res: Response) {
+  async signout(refresh_token: string, res: Response) {
     const userData = await this.jwtService.verify(refresh_token, {
       secret: process.env.REFRESH_TOKEN_KEY,
     });
-    if (!userData) throw new ForbiddenException(`User not found`);
+    if (!userData) throw new ForbiddenException('User not found');
 
     const updatedUser = await this.userModel.update(
-      { hashed_refresh_token: null },
+      { refresh_token: null },
       { where: { id: userData.id }, returning: true },
     );
-    res.clearCookie(`refresh_token`);
+    res.clearCookie('refresh_token');
 
     const response = {
-      message: `User have logged out`,
-      user: updatedUser[1][0],
+      user: this.getUserField(updatedUser[1][0]),
+      message: 'User have signed out successfully!',
     };
     return response;
   }
 
   async refreshToken(user_id: number, refresh_token: string, res: Response) {
     const decodedToken = this.jwtService.decode(refresh_token);
-    if (user_id !== +decodedToken[`id`])
-      throw new BadGatewayException(`User id wrong`);
+    if (user_id !== +decodedToken['id'])
+      throw new BadGatewayException('User id wrong, please try again');
 
-    const user = await this.userModel.findOne({ where: { id: user_id } });
-    if (!user || !user.hashed_refresh_token)
-      throw new BadGatewayException(`User not found`);
+    const user = await this.userModel.findOne({
+      where: { id: user_id },
+      include: { all: true },
+    });
+    if (!user || !user.refresh_token)
+      throw new BadGatewayException('User not found');
 
-    const tokenMatch = await bcrypt.compare(
-      refresh_token,
-      user.hashed_refresh_token,
-    );
-    if (!tokenMatch) throw new ForbiddenException(`Cannot be access`);
+    const tokenMatch = await compare(refresh_token, user.refresh_token);
+    if (!tokenMatch) throw new ForbiddenException('Cannot be access');
 
     const response = {
-      message: `User token refreshed`,
       ...(await this.getResponse(user, res)),
+      message: 'User token refreshed',
     };
     return response;
   }
 
+  async isExistUser({ email }: { email: string }): Promise<User> {
+    return await this.userModel.findOne({
+      where: { email },
+      include: { all: true },
+    });
+  }
+
   async getResponse(user: User, res: Response) {
-    const tokens = await this.getTokens(user.id, user.is_active, user.is_owner);
-    const hashed_refresh_token = await bcrypt.hash(tokens.refresh_token, 7);
+    const tokens = await this.getPairsOfTokens(user);
+
+    const salt = await genSalt(10);
+    const hashedRefreshToken = await hash(tokens.refresh_token, salt);
 
     const updatedUser = await this.userModel.update(
-      { hashed_refresh_token },
+      { refresh_token: hashedRefreshToken },
       { where: { id: user.id }, returning: true },
     );
 
-    res.cookie(`refresh_token`, tokens.refresh_token, {
+    res.cookie('refresh_token', tokens.refresh_token, {
       maxAge: 15 * 24 * 60 * 60 * 1000,
       httpOnly: true,
     });
-    return { user: updatedUser[1][0], tokens };
+
+    return { user: this.getUserField(updatedUser[1][0]), tokens };
   }
 
-  async getTokens(id: number, is_active: boolean, is_owner: boolean) {
-    const jwtPayload = { id, is_active, is_owner };
+  async getPairsOfTokens(user: User): Promise<any> {
+    const jwtPayload = {
+      id: user.id,
+      is_active: user.is_active,
+      is_owner: user.is_owner,
+    };
 
     const [access_token, refresh_token] = await Promise.all([
       this.jwtService.signAsync(jwtPayload, {
@@ -139,5 +163,19 @@ export class AuthService {
     ]);
 
     return { access_token, refresh_token };
+  }
+
+  getUserField(user: User) {
+    return {
+      id: user.id,
+      first_name: user.first_name,
+      last_name: user.last_name,
+      username: user.username,
+      email: user.email,
+      phone: user.phone,
+      telegram_link: user.telegram_link,
+      user_photo: user.user_photo,
+      birthday: user.birthday,
+    };
   }
 }

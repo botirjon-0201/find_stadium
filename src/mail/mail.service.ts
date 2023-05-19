@@ -6,15 +6,16 @@ import { User } from 'src/users/models/user.model';
 export class MailService {
   constructor(private mailerService: MailerService) {}
 
-  async sendUserConfirmation(user: User): Promise<void> {
-    const url = `${process.env.API_HOST}/api/users/activate/${user.activation_link}`;
+  async sendUserConfirmation(data: any): Promise<void> {
+    const { activation_link, email, first_name } = data;
+    const url = `${process.env.API_HOST}/api/users/activate/${activation_link}`;
 
     await this.mailerService.sendMail({
-      to: user.email,
+      to: email,
       subject: 'Welcome to Stadium App! Confirm your Email',
       template: './confirmation',
       context: {
-        name: user.first_name,
+        name: first_name,
         url,
       },
     });

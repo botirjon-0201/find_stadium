@@ -17,49 +17,50 @@ import { LoginUserDto } from 'src/users/dto/login-user.dto';
 import { User } from 'src/users/models/user.model';
 import { AuthService } from './auth.service';
 
-@ApiTags(`Auth`)
+@ApiTags('Auth')
 @Controller('auth')
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
-  @ApiOperation({ summary: `User Registerition` })
+  @ApiOperation({ summary: 'User Registerition' })
   @ApiResponse({ status: 201, type: User })
+  @HttpCode(HttpStatus.CREATED)
   @Post('signup')
-  registration(
+  signup(
     @Body() createUserDto: CreateUserDto,
     @Res({ passthrough: true }) res: Response,
   ) {
-    return this.authService.registration(createUserDto, res);
+    return this.authService.signup(createUserDto, res);
   }
 
-  @ApiOperation({ summary: `User Login` })
+  @ApiOperation({ summary: 'User Login' })
   @ApiResponse({ status: 200, type: User })
   @HttpCode(HttpStatus.OK)
   @Post('signin')
-  login(
+  signin(
     @Body() loginUserDto: LoginUserDto,
     @Res({ passthrough: true }) res: Response,
   ) {
-    return this.authService.login(loginUserDto, res);
+    return this.authService.signin(loginUserDto, res);
   }
 
-  @ApiOperation({ summary: `User Logout` })
+  @ApiOperation({ summary: 'User Logout' })
   @ApiResponse({ status: 200, type: User })
   @HttpCode(HttpStatus.OK)
   @Post('signout')
-  logout(
-    @CookieGetter(`refresh_token`) refresh_token: string,
+  signout(
+    @CookieGetter('refresh_token') refresh_token: string,
     @Res({ passthrough: true }) res: Response,
   ) {
-    return this.authService.logout(refresh_token, res);
+    return this.authService.signout(refresh_token, res);
   }
 
-  @ApiOperation({ summary: `Refresh Token` })
+  @ApiOperation({ summary: 'Refresh Token' })
   @UseGuards(UserGuard)
-  @Post(`refresh/:id`)
+  @Post('refresh/:id')
   refresh(
-    @Param(`id`) id: string,
-    @CookieGetter(`refresh_token`) refresh_token: string,
+    @Param('id') id: string,
+    @CookieGetter('refresh_token') refresh_token: string,
     @Res({ passthrough: true }) res: Response,
   ) {
     return this.authService.refreshToken(+id, refresh_token, res);

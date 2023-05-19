@@ -72,16 +72,16 @@ export class UsersService {
     const user = await this.userModel.findOne({ where: { id } });
     if (!user) throw new UnauthorizedException(`User not found`);
 
-    const isMatchPass = await bcrypt.compare(password, user.hashed_password);
+    const isMatchPass = await bcrypt.compare(password, user.password);
     if (!isMatchPass)
       throw new UnauthorizedException(`Password is not correct`);
 
     if (new_password !== confirm_new_password)
       throw new BadRequestException(`Password and confirm not match`);
 
-    const hashed_password = await bcrypt.hash(new_password, 7);
+    const hashedPassword = await bcrypt.hash(new_password, 7);
     const updatedUser = await this.userModel.update(
-      { hashed_password },
+      { password: hashedPassword },
       { where: { id: user.id }, returning: true },
     );
 
