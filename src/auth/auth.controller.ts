@@ -22,7 +22,7 @@ import { AuthService } from './auth.service';
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
-  @ApiOperation({ summary: 'User Registerition' })
+  @ApiOperation({ summary: 'User Sign Up' })
   @ApiResponse({ status: 201, type: User })
   @HttpCode(HttpStatus.CREATED)
   @Post('signup')
@@ -33,7 +33,7 @@ export class AuthController {
     return this.authService.signup(createUserDto, res);
   }
 
-  @ApiOperation({ summary: 'User Login' })
+  @ApiOperation({ summary: 'User Sign In' })
   @ApiResponse({ status: 200, type: User })
   @HttpCode(HttpStatus.OK)
   @Post('signin')
@@ -44,7 +44,7 @@ export class AuthController {
     return this.authService.signin(loginUserDto, res);
   }
 
-  @ApiOperation({ summary: 'User Logout' })
+  @ApiOperation({ summary: 'User Sign Out' })
   @ApiResponse({ status: 200, type: User })
   @HttpCode(HttpStatus.OK)
   @Post('signout')
@@ -55,7 +55,7 @@ export class AuthController {
     return this.authService.signout(refresh_token, res);
   }
 
-  @ApiOperation({ summary: 'Refresh Token' })
+  @ApiOperation({ summary: 'User Refresh Token' })
   @UseGuards(UserGuard)
   @Post('refresh/:id')
   refresh(

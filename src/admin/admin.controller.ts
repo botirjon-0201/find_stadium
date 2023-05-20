@@ -28,7 +28,7 @@ import { SuperAdminGuard } from '../guards/super-admin.guard';
 export class AdminController {
   constructor(private readonly adminService: AdminService) {}
 
-  @ApiOperation({ summary: 'Admin Registerition' })
+  @ApiOperation({ summary: 'Admin Create' })
   @ApiResponse({ status: 201, type: Admin })
   @HttpCode(HttpStatus.CREATED)
   @UseGuards(SuperAdminGuard)
@@ -37,7 +37,7 @@ export class AdminController {
     return this.adminService.create(createAdminDto);
   }
 
-  @ApiOperation({ summary: 'Admin Login' })
+  @ApiOperation({ summary: 'Admin Sign In' })
   @ApiResponse({ status: 200, type: Admin })
   @HttpCode(HttpStatus.OK)
   @Post('signin')
@@ -48,7 +48,7 @@ export class AdminController {
     return this.adminService.signin(loginAdminDto, res);
   }
 
-  @ApiOperation({ summary: 'Admin Logout' })
+  @ApiOperation({ summary: 'Admin Sign Out' })
   @ApiResponse({ status: 200, type: Admin })
   @HttpCode(HttpStatus.OK)
   @Post('signout')
@@ -59,7 +59,7 @@ export class AdminController {
     return this.adminService.signout(refreshToken, res);
   }
 
-  @ApiOperation({ summary: 'Refresh Token' })
+  @ApiOperation({ summary: 'Admin Refresh Token' })
   @ApiResponse({ status: 200, type: Admin })
   @HttpCode(HttpStatus.OK)
   @UseGuards(AdminGuard)
@@ -81,7 +81,7 @@ export class AdminController {
     return this.adminService.findAll();
   }
 
-  @ApiOperation({ summary: 'Get Admin' })
+  @ApiOperation({ summary: 'Find One Admin' })
   @ApiResponse({ status: 200, type: Admin })
   @HttpCode(HttpStatus.OK)
   @UseGuards(AdminGuard || SuperAdminGuard)

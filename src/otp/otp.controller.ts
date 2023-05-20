@@ -7,12 +7,13 @@ import {
   Res,
 } from '@nestjs/common';
 import { OtpService } from './otp.service';
-import { ApiOperation, ApiResponse } from '@nestjs/swagger';
+import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { Otp } from './models/otp.model';
 import { PhoneUserDto } from '../users/dto/phone-user.dto';
 import { VerifyOtpDto } from '../users/dto/verify-otp.dto';
 import { Response } from 'express';
 
+@ApiTags('Otp')
 @Controller('otp')
 export class OtpController {
   constructor(private readonly otpService: OtpService) {}
