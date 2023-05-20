@@ -1,5 +1,5 @@
 import { TelegrafModule } from 'nestjs-telegraf';
-import { BOT_NAME } from '../app.constants';
+import { BOT_NAME } from '../constants/app.constants';
 import { BotModule } from '../bot/bot.module';
 
 export const getTelegrafConfig: TelegrafModule = {

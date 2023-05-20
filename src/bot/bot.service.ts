@@ -1,9 +1,9 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/sequelize';
 import { InjectBot } from 'nestjs-telegraf';
-import { BOT_NAME } from 'src/app.constants';
 import { Context, Markup, Telegraf } from 'telegraf';
 import { Bot } from './models/bot.model';
+import { BOT_NAME } from 'src/constants/app.constants';
 
 @Injectable()
 export class BotService {
