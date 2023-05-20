@@ -12,7 +12,7 @@ import { CreateUserWalletDto } from './dto/create-user_wallet.dto';
 import { UpdateUserWalletDto } from './dto/update-user_wallet.dto';
 import { ApiTags } from '@nestjs/swagger';
 
-@ApiTags(`User_wallet`)
+@ApiTags('User_wallet')
 @Controller('user-wallet')
 export class UserWalletController {
   constructor(private readonly userWalletService: UserWalletService) {}

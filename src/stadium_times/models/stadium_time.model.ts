@@ -14,9 +14,9 @@ interface StadiumTimeAttrs {
   price: number;
 }
 
-@Table({ tableName: `stadium_times` })
+@Table({ tableName: 'stadium_times' })
 export class StadiumTime extends Model<StadiumTime, StadiumTimeAttrs> {
-  @ApiProperty({ example: 1, description: `Unique ID` })
+  @ApiProperty({ example: 1, description: 'Unique ID' })
   @Column({
     type: DataType.BIGINT,
     autoIncrement: true,
@@ -24,37 +24,20 @@ export class StadiumTime extends Model<StadiumTime, StadiumTimeAttrs> {
   })
   id: number;
 
-  @ApiProperty({ example: 1, description: `Forign Key` })
+  @ApiProperty({ example: 1, description: 'Forign Key' })
   @ForeignKey(() => Stadium)
-  @Column({
-    type: DataType.SMALLINT,
-  })
+  @Column({ type: DataType.SMALLINT })
   stadium_id: number;
 
-  @ApiProperty({
-    example: `07-00`,
-    description: `Start time`,
-  })
-  @Column({
-    type: DataType.DATE,
-  })
+  @ApiProperty({ example: '07-00', description: 'Start time' })
+  @Column({ type: DataType.DATE })
   start_time: Date;
 
-  @ApiProperty({
-    example: `23-00`,
-    description: `End time`,
-  })
-  @Column({
-    type: DataType.DATE,
-  })
+  @ApiProperty({ example: '23-00', description: 'End time' })
+  @Column({ type: DataType.DATE })
   end_time: Date;
 
-  @ApiProperty({
-    example: `120000`,
-    description: `Price`,
-  })
-  @Column({
-    type: DataType.INTEGER,
-  })
+  @ApiProperty({ example: '120000', description: 'Price' })
+  @Column({ type: DataType.INTEGER })
   price: number;
 }

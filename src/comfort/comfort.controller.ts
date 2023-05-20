@@ -12,7 +12,7 @@ import { ComfortService } from './comfort.service';
 import { CreateComfortDto } from './dto/create-comfort.dto';
 import { UpdateComfortDto } from './dto/update-comfort.dto';
 
-@ApiTags(`Comfort`)
+@ApiTags('Comfort')
 @Controller('comfort')
 export class ComfortController {
   constructor(private readonly comfortService: ComfortService) {}

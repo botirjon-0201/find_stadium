@@ -6,9 +6,9 @@ interface MediaAttrs {
   description: string;
 }
 
-@Table({ tableName: `media` })
+@Table({ tableName: 'media' })
 export class Media extends Model<Media, MediaAttrs> {
-  @ApiProperty({ example: 1, description: `Unique ID` })
+  @ApiProperty({ example: 1, description: 'Unique ID' })
   @Column({
     type: DataType.BIGINT,
     autoIncrement: true,

@@ -8,14 +8,14 @@ import { getSwaggerConfig } from './config/swagger.config';
 async function bootstrap() {
   try {
     const app = await NestFactory.create(AppModule);
-    app.setGlobalPrefix(`api`);
+    app.setGlobalPrefix('api');
     app.useGlobalPipes(new ValidationPipe());
     app.use(cookieParser());
 
-    const PORT = process.env.PORT || 3333;
+    const PORT = process.env.PORT || 5555;
     const config = getSwaggerConfig;
     const document = SwaggerModule.createDocument(app, config);
-    SwaggerModule.setup(`api/find-stadium`, app, document);
+    SwaggerModule.setup('api/find-stadium', app, document);
 
     await app.listen(PORT);
     console.log(`Server is running on port ${PORT}`);

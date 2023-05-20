@@ -1,8 +1,6 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { SequelizeModule } from '@nestjs/sequelize';
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
 import { UsersModule } from './users/users.module';
 import { StadiumsModule } from './stadiums/stadiums.module';
 import { StadiumTimesModule } from './stadium_times/stadium_times.module';
@@ -54,7 +52,7 @@ import { getTelegrafConfig } from './config/telegraf.config';
     BotModule,
     OtpModule,
   ],
-  controllers: [AppController],
-  providers: [AppService],
+  controllers: [],
+  providers: [],
 })
 export class AppModule {}

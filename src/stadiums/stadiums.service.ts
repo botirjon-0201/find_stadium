@@ -26,7 +26,7 @@ export class StadiumsService {
     const newStadium = await this.stadiumModel.create(createStadiumDto);
     const response = {
       newStadium,
-      message: `New stadium was created`,
+      message: 'New stadium was created',
     };
     return response;
   }
@@ -35,25 +35,29 @@ export class StadiumsService {
     const stadiums = await this.stadiumModel.findAll({
       include: { all: true },
     });
-    if (!stadiums) throw new NotFoundException(`No any stadiums`);
+    if (!stadiums) throw new NotFoundException('No any stadiums');
 
-    const response = { stadiums, message: `All stadiums` };
+    const response = { stadiums, message: 'All stadiums' };
     return response;
   }
 
   async findOne(id: number) {
     const stadium = await this.stadiumModel.findOne({
       where: { id },
+      include: { all: true },
     });
-    if (!stadium) throw new NotFoundException(`Stadium not found`);
+    if (!stadium) throw new NotFoundException('Stadium not found');
 
-    const response = { stadium, message: `Stadium information` };
+    const response = { stadium, message: 'Stadium information' };
     return response;
   }
 
   async update(id: number, updateStadiumDto: UpdateStadiumDto) {
-    const stadium = await this.stadiumModel.findOne({ where: { id } });
-    if (!stadium) throw new NotFoundException(`Stadium not found`);
+    const stadium = await this.stadiumModel.findOne({
+      where: { id },
+      include: { all: true },
+    });
+    if (!stadium) throw new NotFoundException('Stadium not found');
 
     const updatedStadium = await this.stadiumModel.update(
       { ...updateStadiumDto },
@@ -64,17 +68,20 @@ export class StadiumsService {
     );
     const response = {
       stadium: updatedStadium[1][0],
-      message: `Stadium updated`,
+      message: 'Stadium updated',
     };
     return response;
   }
 
   async remove(id: number) {
-    const stadium = await this.stadiumModel.findOne({ where: { id } });
-    if (!stadium) throw new NotFoundException(`Stadium not found`);
+    const stadium = await this.stadiumModel.findOne({
+      where: { id },
+      include: { all: true },
+    });
+    if (!stadium) throw new NotFoundException('Stadium not found');
     await this.stadiumModel.destroy({ where: { id } });
 
-    const response = { stadium: id, message: `Stadium deleted` };
+    const response = { stadium: id, message: 'Stadium deleted' };
     return response;
   }
 }

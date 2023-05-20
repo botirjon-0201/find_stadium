@@ -6,9 +6,9 @@ interface ComfortAttrs {
   name: string;
 }
 
-@Table({ tableName: `comfort` })
+@Table({ tableName: 'comfort' })
 export class Comfort extends Model<Comfort, ComfortAttrs> {
-  @ApiProperty({ example: 1, description: `Unique ID` })
+  @ApiProperty({ example: 1, description: 'Unique ID' })
   @HasMany(() => ComfortStadium)
   comfortStadium: ComfortStadium[];
   @Column({
@@ -18,12 +18,7 @@ export class Comfort extends Model<Comfort, ComfortAttrs> {
   })
   id: number;
 
-  @ApiProperty({
-    example: `comfort`,
-    description: `comfort name`,
-  })
-  @Column({
-    type: DataType.STRING,
-  })
+  @ApiProperty({ example: 'comfort', description: 'comfort name' })
+  @Column({ type: DataType.STRING })
   name: string;
 }

@@ -12,7 +12,7 @@ import { CreateStadiumTimeDto } from './dto/create-stadium_time.dto';
 import { UpdateStadiumTimeDto } from './dto/update-stadium_time.dto';
 import { ApiTags } from '@nestjs/swagger';
 
-@ApiTags(`Stadium_times`)
+@ApiTags('Stadium_times')
 @Controller('stadium-times')
 export class StadiumTimesController {
   constructor(private readonly stadiumTimesService: StadiumTimesService) {}

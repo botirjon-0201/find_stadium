@@ -12,7 +12,7 @@ import { CreateUserCardDto } from './dto/create-user_card.dto';
 import { UpdateUserCardDto } from './dto/update-user_card.dto';
 import { ApiTags } from '@nestjs/swagger';
 
-@ApiTags(`User_cards`)
+@ApiTags('User_cards')
 @Controller('user-cards')
 export class UserCardsController {
   constructor(private readonly userCardsService: UserCardsService) {}

@@ -25,9 +25,9 @@ interface StadiumAttrs {
   end_time: string;
 }
 
-@Table({ tableName: `stadiums` })
+@Table({ tableName: 'stadiums' })
 export class Stadium extends Model<Stadium, StadiumAttrs> {
-  @ApiProperty({ example: 1, description: `Unique ID` })
+  @ApiProperty({ example: 1, description: 'Unique ID' })
   @HasMany(() => ComfortStadium)
   comfortStadium: ComfortStadium[];
   @Column({
@@ -37,112 +37,76 @@ export class Stadium extends Model<Stadium, StadiumAttrs> {
   })
   id: number;
 
-  @ApiProperty({ example: 1, description: `Forign Key` })
+  @ApiProperty({ example: 1, description: 'Forign Key' })
   @ForeignKey(() => Category)
-  @Column({
-    type: DataType.BIGINT,
-  })
+  @Column({ type: DataType.BIGINT })
   category_id: number;
 
   @BelongsTo(() => Category)
   category: Category;
 
-  @ApiProperty({ example: 1, description: `Forign Key` })
-  // @ForeignKey(() => User)
-  @Column({
-    type: DataType.BIGINT,
-  })
+  @ApiProperty({ example: 1, description: 'Forign Key' })
+  @ForeignKey(() => User)
+  @Column({ type: DataType.BIGINT })
   owner_id: number;
 
-  // @BelongsTo(() => User)
-  // user: User;
+  @BelongsTo(() => User)
+  user: User;
 
-  @ApiProperty({ example: `adminstrator`, description: `Adminstrator Name` })
-  @Column({
-    type: DataType.STRING,
-  })
+  @ApiProperty({ example: 'adminstrator', description: 'Adminstrator Name' })
+  @Column({ type: DataType.STRING })
   contact_with: string;
 
-  @ApiProperty({
-    example: `stadium`,
-    description: `Stadium Name`,
-  })
-  @Column({
-    type: DataType.STRING,
-  })
+  @ApiProperty({ example: 'stadium', description: 'Stadium Name' })
+  @Column({ type: DataType.STRING })
   name: string;
 
-  @ApiProperty({
-    example: `25x50`,
-    description: `Stadium Volume`,
-  })
-  @Column({
-    type: DataType.STRING,
-  })
+  @ApiProperty({ example: '25x50', description: 'Stadium Volume' })
+  @Column({ type: DataType.STRING })
   volume: string;
 
   @ApiProperty({
-    example: `Home 1, Street Muqumiy`,
-    description: `Stadium Address`,
+    example: 'Home 1, Street Muqumiy',
+    description: 'Stadium Address',
   })
-  @Column({
-    type: DataType.STRING,
-  })
+  @Column({ type: DataType.STRING })
   address: string;
 
-  @ApiProperty({ example: 1, description: `Forign Key` })
-  // // @ForeignKey(() => Region)
-  @Column({
-    type: DataType.BIGINT,
-  })
+  @ApiProperty({ example: 1, description: 'Forign Key' })
+  @ForeignKey(() => Region)
+  @Column({ type: DataType.BIGINT })
   region_id: number;
 
-  // @BelongsTo(() => Region)
-  // region: Region;
+  @BelongsTo(() => Region)
+  region: Region;
 
-  @ApiProperty({ example: 1, description: `Forign Key` })
-  // // @ForeignKey(() => District)
-  @Column({
-    type: DataType.BIGINT,
-  })
+  @ApiProperty({ example: 1, description: 'Forign Key' })
+  @ForeignKey(() => District)
+  @Column({ type: DataType.BIGINT })
   district_id: number;
 
-  // @BelongsTo(() => District)
-  // district: District;
+  @BelongsTo(() => District)
+  district: District;
 
   @ApiProperty({
-    example: `41.211841, 69.352723`,
-    description: `Stadium Location`,
+    example: '41.211841, 69.352723',
+    description: 'Stadium Location',
   })
-  @Column({
-    type: DataType.STRING,
-  })
+  @Column({ type: DataType.STRING })
   location: string;
 
   @ApiProperty({
-    example: `2020-01-01`,
-    description: `When the Stadium was built`,
+    example: '2020-01-01',
+    description: 'When the Stadium was built',
   })
-  @Column({
-    type: DataType.DATE,
-  })
+  @Column({ type: DataType.DATE })
   buildAt: Date;
 
-  @ApiProperty({
-    example: `07-00`,
-    description: `Start time`,
-  })
-  @Column({
-    type: DataType.STRING,
-  })
+  @ApiProperty({ example: '07-00', description: 'Start time' })
+  @Column({ type: DataType.STRING })
   start_time: string;
 
-  @ApiProperty({
-    example: `23-30`,
-    description: `End time`,
-  })
-  @Column({
-    type: DataType.STRING,
-  })
+  @ApiProperty({ example: '23-30', description: 'End time' })
+  @Column({ type: DataType.STRING })
   end_time: string;
 }

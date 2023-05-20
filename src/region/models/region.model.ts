@@ -7,25 +7,17 @@ interface RegionAttrs {
   name: string;
 }
 
-@Table({ tableName: `region` })
+@Table({ tableName: 'region' })
 export class Region extends Model<Region, RegionAttrs> {
-  @ApiProperty({ example: 1, description: `Unique ID` })
-  // @HasMany(() => Stadium)
-  // stadium: Stadium[];
-  // @HasMany(() => District)
-  // district: District[];
-  @Column({
-    type: DataType.BIGINT,
-    primaryKey: true,
-  })
+  @ApiProperty({ example: 1, description: 'Unique ID' })
+  @HasMany(() => Stadium)
+  stadium: Stadium[];
+  @HasMany(() => District)
+  district: District[];
+  @Column({ type: DataType.BIGINT, primaryKey: true })
   id: number;
 
-  @ApiProperty({
-    example: `region`,
-    description: `region name`,
-  })
-  @Column({
-    type: DataType.STRING,
-  })
+  @ApiProperty({ example: 'region', description: 'region name' })
+  @Column({ type: DataType.STRING })
   name: string;
 }

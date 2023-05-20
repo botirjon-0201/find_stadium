@@ -12,7 +12,7 @@ import { CreatePaymentForWalletDto } from './dto/create-payment_for_wallet.dto';
 import { UpdatePaymentForWalletDto } from './dto/update-payment_for_wallet.dto';
 import { ApiTags } from '@nestjs/swagger';
 
-@ApiTags(`Payment_for_wallet`)
+@ApiTags('Payment_for_wallet')
 @Controller('payment-for-wallet')
 export class PaymentForWalletController {
   constructor(
