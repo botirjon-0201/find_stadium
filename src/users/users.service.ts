@@ -1,253 +1,173 @@
-import { User } from './models/user.model';
 import {
   BadRequestException,
-  HttpException,
-  HttpStatus,
   Injectable,
   NotFoundException,
   UnauthorizedException,
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/sequelize';
-import * as bcrypt from 'bcrypt';
+import { User } from './models/user.model';
+import { compare, genSalt, hash } from 'bcrypt';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { PasswordUserDto } from './dto/password-user.dto';
-import { PhoneUserDto } from './dto/phone-user.dto';
-import * as otpGenaretor from 'otp-generator';
-import { BotService } from 'src/bot/bot.service';
-import { addMinutesToDate } from 'src/helpers/addMinutes';
-import { Otp } from 'src/otp/models/otp.model';
-import { Op } from 'sequelize';
-import { v4 } from 'uuid';
-import { dates, decode, encode } from 'src/helpers/crypto';
-import { VerifyOtpDto } from './dto/verify-otp.dto';
-import { Response } from 'express';
-import { AuthService } from 'src/auth/auth.service';
 
 @Injectable()
 export class UsersService {
-  constructor(
-    @InjectModel(User) private readonly userModel: typeof User,
-    @InjectModel(Otp) private readonly otpModel: typeof Otp,
-    private readonly botService: BotService,
-    private readonly authService: AuthService,
-  ) {}
+  constructor(@InjectModel(User) private readonly userModel: typeof User) {}
 
   async findAll() {
-    const users = await this.userModel.findAll();
-    if (!users) throw new NotFoundException(`No any users`);
+    const users = await this.userModel.findAll({ include: { all: true } });
+    if (!users) throw new NotFoundException('No any Users');
 
-    const response = { users, message: `All users` };
+    const response = {
+      users: users.map(this.getUserField),
+      message: 'All Users',
+    };
     return response;
   }
 
   async findOne(id: number) {
-    const user = await this.userModel.findOne({ where: { id } });
-    if (!user) throw new UnauthorizedException(`User not found`);
+    const user = await this.findById(id);
+    if (!user) throw new UnauthorizedException('User Not Found');
 
-    const response = { user, message: `User information` };
+    const response = {
+      user: this.getUserField(user),
+      message: 'User Information',
+    };
     return response;
   }
 
   async update(id: number, updateUserDto: UpdateUserDto) {
-    const user = await this.userModel.findOne({ where: { id } });
-    if (!user) throw new UnauthorizedException(`User not found`);
+    const user = await this.findById(id);
+    if (!user) throw new UnauthorizedException('User not found');
 
     const updatedUser = await this.userModel.update(
       { ...updateUserDto },
-      {
-        where: { id },
-        returning: true,
-      },
+      { where: { id }, returning: true },
     );
 
     const response = {
-      message: `User updated successfully`,
-      user: updatedUser[1][0],
+      user: this.getUserField(updatedUser[1][0]),
+      message: 'User information updated successfully!',
+    };
+    return response;
+  }
+
+  async remove(id: number) {
+    const user = await this.findById(id);
+    if (!user) throw new UnauthorizedException('User not found');
+    await this.userModel.destroy({ where: { id } });
+
+    const response = { message: `This action removes a #${id} user` };
+    return response;
+  }
+
+  async activate(link: string): Promise<any> {
+    const updatedUser = await this.userModel.update(
+      { is_active: true },
+      { where: { activation_link: link, is_active: false }, returning: true },
+    );
+
+    const response = {
+      user: this.getUserField(updatedUser[1][0]),
+      message: 'User activated successfully',
+    };
+    return response;
+  }
+
+  async deactivate(id: number): Promise<any> {
+    const user = await this.findById(id);
+    if (!user) throw new UnauthorizedException('User not found');
+
+    const updatedUser = await this.userModel.update(
+      { is_active: false },
+      { where: { id }, returning: true },
+    );
+
+    const response = {
+      user: this.getUserField(updatedUser[1][0]),
+      message: 'User deactivated successfully',
+    };
+    return response;
+  }
+
+  async isOwner(id: number): Promise<any> {
+    const user = await this.findById(id);
+    if (!user) throw new UnauthorizedException('User not found');
+
+    const updatedUser = await this.userModel.update(
+      { is_owner: !user.is_owner },
+      { where: { id }, returning: true },
+    );
+
+    const response = {
+      user: this.getUserField(updatedUser[1][0]),
+      message: 'User is_owner',
     };
     return response;
   }
 
   async updatePassword(id: number, passwordUserDto: PasswordUserDto) {
     const { password, new_password, confirm_new_password } = passwordUserDto;
-    const user = await this.userModel.findOne({ where: { id } });
-    if (!user) throw new UnauthorizedException(`User not found`);
 
-    const isMatchPass = await bcrypt.compare(password, user.password);
+    const user = await this.findById(id);
+    if (!user) throw new UnauthorizedException('User not found');
+
+    const isMatchPass = await compare(password, user.password);
     if (!isMatchPass)
-      throw new UnauthorizedException(`Password is not correct`);
+      throw new UnauthorizedException('Password is wrong, please try again');
 
     if (new_password !== confirm_new_password)
-      throw new BadRequestException(`Password and confirm not match`);
+      throw new BadRequestException('Password and confirm password not match');
 
-    const hashedPassword = await bcrypt.hash(new_password, 7);
+    const salt = await genSalt(10);
+    const hashedPassword = await hash(new_password, salt);
+
     const updatedUser = await this.userModel.update(
       { password: hashedPassword },
       { where: { id: user.id }, returning: true },
     );
 
     const response = {
-      message: `Password updated successfully`,
-      user: updatedUser[1][0],
+      user: this.getUserField(updatedUser[1][0]),
+      message: 'Password updated successfully',
     };
     return response;
   }
 
-  async activate(link: string) {
-    const updatedUser = await this.userModel.update(
-      { is_active: true },
-      {
-        where: { activation_link: link, is_active: false },
-        returning: true,
-      },
-    );
-
-    const response = {
-      message: `User activate successfully`,
-      user: updatedUser[1][0],
-    };
-    return response;
-  }
-
-  async deactivate(id: number) {
-    const user = await this.userModel.findOne({ where: { id } });
-    if (!user) throw new UnauthorizedException(`User not found`);
-
-    const updatedUser = await this.userModel.update(
-      { is_active: false },
-      {
-        where: { id },
-        returning: true,
-      },
-    );
-
-    const response = {
-      user: updatedUser[1][0],
-      message: `User deactivate successfully`,
-    };
-    return response;
-  }
-
-  async isOwner(id: number) {
-    const user = await this.userModel.findOne({ where: { id } });
-    if (!user) throw new UnauthorizedException(`User not found`);
-
-    const updatedUser = await this.userModel.update(
-      { is_owner: !user.is_owner },
-      {
-        where: { id },
-        returning: true,
-      },
-    );
-    const response = { user: updatedUser[1][0], message: `User is_owner` };
-    return response;
-  }
-
-  async remove(id: number) {
-    const user = await this.userModel.findOne({ where: { id } });
-    if (!user) throw new UnauthorizedException(`User not found`);
-    await this.userModel.destroy({ where: { id } });
-
-    const response = { user: id, message: `User deleted successfully` };
-    return response;
-  }
-
-  async newOTP(phoneUserDto: PhoneUserDto) {
-    const phone_number = phoneUserDto.phone;
-    const user = await this.userModel.findOne({
-      where: { phone: phone_number },
-    });
-    if (!user)
-      throw new NotFoundException('User not found, please, first register!');
-
-    const otp = otpGenaretor.generate(4, {
-      upperCaseAlphabets: false,
-      lowerCaseAlphabets: false,
-      specialChars: false,
-    });
-
-    const isSend = await this.botService.sendOTP(phone_number, otp);
-    if (!isSend)
-      throw new HttpException(
-        'First register from the bot',
-        HttpStatus.BAD_REQUEST,
-      );
-
-    const now = new Date();
-    const expiration_time = addMinutesToDate(now, 5);
-
-    await this.otpModel.destroy({
-      where: { [Op.and]: [{ check: phone_number }, { verified: false }] },
-    });
-
-    const new_otp = await this.otpModel.create({
-      id: v4(),
-      otp,
-      expiration_time,
-      check: phone_number,
-    });
-
-    const details = {
-      timestamp: now,
-      check: phone_number,
-      success: true,
-      message: 'OTP send to user',
-      otp_id: new_otp.id,
-    };
-
-    const encoded = await encode(JSON.stringify(details));
-    return { status: 'Success', Details: encoded };
-  }
-
-  async verifyOtp(
-    verifyOtpDto: VerifyOtpDto,
-    // headers: { 'user-agent': string },
-    res: Response,
-  ) {
-    const { verification_key, otp, check } = verifyOtpDto;
-    const currentDate = new Date();
-    const decoded = await decode(verification_key);
-    const obj = JSON.parse(decoded);
-    const check_obj = obj.check;
-
-    if (check_obj !== check)
-      throw new BadRequestException('OTP has not been sent to this number');
-
-    const result = await this.otpModel.findOne({
-      where: { id: obj.otp_id },
+  async findById(id: number): Promise<User> {
+    return await this.userModel.findOne({
+      where: { id },
       include: { all: true },
     });
+  }
 
-    if (result !== null) {
-      if (!result.verified) {
-        if (dates.compare(result.expiration_time, currentDate)) {
-          if (otp === result.otp) {
-            const user = await this.userModel.findOne({
-              where: { phone: check },
-            });
-            if (user) {
-              const updatedUser = await this.userModel.update(
-                { is_owner: true },
-                { where: { id: user.id }, returning: true },
-              );
-              const response = {
-                message: `User have done owner`,
-                ...(await this.authService.getResponse(updatedUser[1][0], res)),
-              };
-              return response;
-            } else {
-              throw new BadRequestException('Please, first register!');
-            }
-          } else {
-            throw new BadRequestException('OTP is not match');
-          }
-        } else {
-          throw new BadRequestException('OTP expired in');
-        }
-      } else {
-        throw new BadRequestException('This OTP is already used');
-      }
-    } else {
-      throw new NotFoundException('No such user found');
-    }
+  async findByEmail(email: string): Promise<User> {
+    return await this.userModel.findOne({
+      where: { email },
+      include: { all: true },
+    });
+  }
+
+  async findByPhone(phone: string): Promise<User> {
+    return await this.userModel.findOne({
+      where: { phone },
+      include: { all: true },
+    });
+  }
+
+  getUserField(user: User) {
+    return {
+      id: user.id,
+      first_name: user.first_name,
+      last_name: user.last_name,
+      username: user.username,
+      email: user.email,
+      phone: user.phone,
+      telegram_link: user.telegram_link,
+      user_photo: user.user_photo,
+      birthday: user.birthday,
+      is_active: user.is_active,
+      is_owner: user.is_owner,
+    };
   }
 }

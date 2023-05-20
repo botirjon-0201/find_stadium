@@ -9,52 +9,44 @@ import {
 } from 'class-validator';
 
 export class CreateAdminDto {
-  @ApiProperty({ example: `name`, description: `Admin name` })
+  @ApiProperty({ example: 'ali', description: 'Admin First Name' })
   @IsNotEmpty()
   @IsString()
   first_name: string;
 
-  @ApiProperty({
-    example: `surname`,
-    description: `Admin surname`,
-  })
+  @ApiProperty({ example: 'valiyev', description: 'Admin Last Name' })
   @IsNotEmpty()
   @IsString()
   last_name: string;
 
-  @ApiProperty({ example: `admin1`, description: `Adminname` })
+  @ApiProperty({ example: 'admin1', description: 'Admin Username' })
   @IsNotEmpty()
   @IsString()
   username: string;
 
-  @ApiProperty({
-    example: `email1@mail.uz`,
-    description: `Admin email`,
-  })
+  @ApiProperty({ example: 'admin1@mail.uz', description: 'Admin Email' })
+  @IsNotEmpty()
+  @IsString()
   @IsEmail()
   email: string;
 
-  @ApiProperty({ example: `password`, description: `Admin password` })
+  @ApiProperty({ example: 'Pa$$w0rd', description: 'Admin password' })
   @IsNotEmpty()
   @IsString()
   @MinLength(6)
   @IsStrongPassword()
   password: string;
 
-  @ApiProperty({
-    example: `confirm_password`,
-    description: `Confirm password`,
-  })
+  @ApiProperty({ example: 'confirm_password', description: 'Confirm password' })
   @IsNotEmpty()
   @IsString()
   @MinLength(6)
   @IsStrongPassword()
   confirm_password: string;
 
-  @ApiProperty({
-    example: `901234567`,
-    description: `Admin phone number`,
-  })
+  @ApiProperty({ example: '+998909090909', description: 'Admin Phone Number' })
+  @IsNotEmpty()
+  @IsString()
   @IsPhoneNumber()
   phone: string;
 }

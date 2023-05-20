@@ -5,14 +5,14 @@ import { SequelizeModule } from '@nestjs/sequelize';
 import { JwtModule } from '@nestjs/jwt';
 import { User } from 'src/users/models/user.model';
 import { MailModule } from 'src/mail/mail.module';
+import { UsersModule } from '../users/users.module';
+import { getJWTConfig } from '../config/jwt.config';
 
 @Module({
   imports: [
     SequelizeModule.forFeature([User]),
-    JwtModule.register({
-      secret: process.env.ACCESS_TOKEN_KEY,
-      signOptions: { expiresIn: process.env.ACCESS_TOKEN_TIME },
-    }),
+    JwtModule.register(getJWTConfig),
+    UsersModule,
     MailModule,
   ],
   controllers: [AuthController],

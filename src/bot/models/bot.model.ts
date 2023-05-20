@@ -12,7 +12,7 @@ interface BotAttrs {
 
 @Table({ tableName: 'bot' })
 export class Bot extends Model<Bot, BotAttrs> {
-  @ApiProperty({ example: 123456789, description: `User ID` })
+  @ApiProperty({ example: 123456789, description: 'User ID' })
   @Column({
     type: DataType.BIGINT,
     autoIncrement: true,
@@ -20,33 +20,23 @@ export class Bot extends Model<Bot, BotAttrs> {
   })
   user_id: number;
 
-  @ApiProperty({ example: `username`, description: `Username` })
-  @Column({
-    type: DataType.STRING,
-  })
+  @ApiProperty({ example: 'username', description: 'Username' })
+  @Column({ type: DataType.STRING })
   username: string;
 
-  @ApiProperty({ example: `name`, description: `First Name` })
-  @Column({
-    type: DataType.STRING,
-  })
+  @ApiProperty({ example: 'name', description: 'First Name' })
+  @Column({ type: DataType.STRING })
   first_name: string;
 
-  @ApiProperty({ example: `surname`, description: `Last Name` })
-  @Column({
-    type: DataType.STRING,
-  })
+  @ApiProperty({ example: 'surname', description: 'Last Name' })
+  @Column({ type: DataType.STRING })
   last_name: string;
 
-  @ApiProperty({ example: `+998901234567`, description: `Phone Number` })
-  @Column({
-    type: DataType.STRING,
-  })
+  @ApiProperty({ example: '+998901234567', description: 'Phone Number' })
+  @Column({ type: DataType.STRING })
   phone_number: string;
 
-  @ApiProperty({ example: `false`, description: `Status` })
-  @Column({
-    type: DataType.BOOLEAN,
-  })
+  @ApiProperty({ example: 'false', description: 'Status' })
+  @Column({ type: DataType.BOOLEAN })
   status: boolean;
 }

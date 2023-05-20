@@ -4,10 +4,13 @@ import { AdminController } from './admin.controller';
 import { SequelizeModule } from '@nestjs/sequelize';
 import { Admin } from './models/admin.model';
 import { JwtModule } from '@nestjs/jwt';
+import { getJWTConfig } from '../config/jwt.config';
 
 @Module({
-  // JwtModule nima vazifa bajaradi?
-  imports: [SequelizeModule.forFeature([Admin]), JwtModule.register({})],
+  imports: [
+    SequelizeModule.forFeature([Admin]),
+    JwtModule.register(getJWTConfig),
+  ],
   controllers: [AdminController],
   providers: [AdminService],
 })

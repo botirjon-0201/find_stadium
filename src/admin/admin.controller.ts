@@ -15,109 +15,126 @@ import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { Response } from 'express';
 import { CookieGetter } from 'src/decorators/cookieGetter.decorator';
 import { AdminGuard } from 'src/guards/admin.guard';
-import { CreatorGuard } from 'src/guards/creator.guard';
 import { AdminService } from './admin.service';
 import { CreateAdminDto } from './dto/create-admin.dto';
 import { LoginAdminDto } from './dto/login-admin.dto';
 import { PasswordAdminDto } from './dto/password-admin.dto';
 import { UpdateAdminDto } from './dto/update-admin.dto';
 import { Admin } from './models/admin.model';
+import { SuperAdminGuard } from '../guards/super-admin.guard';
 
-@ApiTags(`Admin`)
+@ApiTags('Admin')
 @Controller('admin')
 export class AdminController {
   constructor(private readonly adminService: AdminService) {}
 
-  @ApiOperation({ summary: `Admin Registerition` })
+  @ApiOperation({ summary: 'Admin Registerition' })
   @ApiResponse({ status: 201, type: Admin })
-  @Post('signup')
-  registration(
-    @Body() createAdminDto: CreateAdminDto,
-    @Res({ passthrough: true }) res: Response,
-  ) {
-    return this.adminService.registration(createAdminDto, res);
+  @HttpCode(HttpStatus.CREATED)
+  @UseGuards(SuperAdminGuard)
+  @Post('create')
+  create(@Body() createAdminDto: CreateAdminDto) {
+    return this.adminService.create(createAdminDto);
   }
 
-  @ApiOperation({ summary: `Admin Login` })
+  @ApiOperation({ summary: 'Admin Login' })
   @ApiResponse({ status: 200, type: Admin })
   @HttpCode(HttpStatus.OK)
   @Post('signin')
-  login(
+  signin(
     @Body() loginAdminDto: LoginAdminDto,
     @Res({ passthrough: true }) res: Response,
   ) {
-    return this.adminService.login(loginAdminDto, res);
+    return this.adminService.signin(loginAdminDto, res);
   }
 
-  @ApiOperation({ summary: `Admin Logout` })
+  @ApiOperation({ summary: 'Admin Logout' })
   @ApiResponse({ status: 200, type: Admin })
   @HttpCode(HttpStatus.OK)
   @Post('signout')
-  logout(
-    @CookieGetter(`refresh_token`) refreshToken: string,
+  signout(
+    @CookieGetter('refresh_token') refreshToken: string,
     @Res({ passthrough: true }) res: Response,
   ) {
-    return this.adminService.logout(refreshToken, res);
+    return this.adminService.signout(refreshToken, res);
   }
 
-  @ApiOperation({ summary: `Refresh Token` })
+  @ApiOperation({ summary: 'Refresh Token' })
+  @ApiResponse({ status: 200, type: Admin })
+  @HttpCode(HttpStatus.OK)
   @UseGuards(AdminGuard)
-  @Post(`:id/refresh`)
+  @Post('refresh/:id')
   refresh(
-    @Param(`id`) id: string,
-    @CookieGetter(`refresh_token`) refreshToken: string,
+    @Param('id') id: string,
+    @CookieGetter('refresh_token') refreshToken: string,
     @Res({ passthrough: true }) res: Response,
   ) {
     return this.adminService.refreshToken(+id, refreshToken, res);
   }
 
-  @ApiOperation({ summary: `Find All Admins` })
+  @ApiOperation({ summary: 'Find All Admins' })
+  @ApiResponse({ status: 200, type: [Admin] })
+  @HttpCode(HttpStatus.OK)
+  @UseGuards(SuperAdminGuard)
   @Get()
   findAll() {
     return this.adminService.findAll();
   }
 
-  @ApiOperation({ summary: `Get Admin` })
+  @ApiOperation({ summary: 'Get Admin' })
+  @ApiResponse({ status: 200, type: Admin })
+  @HttpCode(HttpStatus.OK)
+  @UseGuards(AdminGuard || SuperAdminGuard)
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.adminService.findOne(+id);
   }
 
-  @ApiOperation({ summary: `Update Admin` })
-  @UseGuards(AdminGuard)
+  @ApiOperation({ summary: 'Update Admin' })
+  @ApiResponse({ status: 200, type: Admin })
+  @HttpCode(HttpStatus.OK)
+  @UseGuards(SuperAdminGuard)
   @Patch(':id')
   update(@Param('id') id: string, @Body() updateAdminDto: UpdateAdminDto) {
     return this.adminService.update(+id, updateAdminDto);
   }
 
-  @ApiOperation({ summary: `Update Admin Password` })
-  @UseGuards(AdminGuard)
-  @Patch(`:id/password`)
-  updatePassword(
-    @Param(`id`) id: string,
-    @Body() passwordAdminDto: PasswordAdminDto,
-  ) {
-    return this.adminService.updatePassword(+id, passwordAdminDto);
-  }
-
-  @ApiOperation({ summary: `IsActive Admin` })
-  @UseGuards(AdminGuard)
-  @Patch(':id/active')
-  isActive(@Param('id') id: string) {
-    return this.adminService.isActive(+id);
-  }
-
-  @ApiOperation({ summary: `IsCreator Admin` })
-  @UseGuards(CreatorGuard)
-  @Patch(':id/creator')
-  isCreator(@Param('id') id: string) {
-    return this.adminService.isCreator(+id);
-  }
-
-  @ApiOperation({ summary: `Delete Admin` })
-  @UseGuards(AdminGuard)
+  @ApiOperation({ summary: 'Delete Admin' })
+  @ApiResponse({ status: 200, type: Admin })
+  @HttpCode(HttpStatus.OK)
+  @UseGuards(SuperAdminGuard)
   @Delete(':id')
   remove(@Param('id') id: string) {
     return this.adminService.remove(+id);
+  }
+
+  @ApiOperation({ summary: 'Admin Activate' })
+  @ApiResponse({ status: 200, type: Admin })
+  @HttpCode(HttpStatus.OK)
+  @UseGuards(SuperAdminGuard)
+  @Patch('activate/:id')
+  activate(@Param('id') id: string) {
+    return this.adminService.activete(+id);
+  }
+
+  @ApiOperation({ summary: 'Admin Deactivate' })
+  @ApiResponse({ status: 200, type: Admin })
+  @HttpCode(HttpStatus.OK)
+  @UseGuards(SuperAdminGuard)
+  @Patch('deactivate/:id')
+  deactivate(@Param('id') id: string) {
+    return this.adminService.deactivete(+id);
+  }
+
+  @ApiOperation({ summary: 'Update Admin Password' })
+  @ApiResponse({ status: 200, type: Admin })
+  @HttpCode(HttpStatus.OK)
+  @UseGuards(AdminGuard)
+  @Patch('update-password/:id')
+  updatePassword(
+    @Param('id') id: string,
+    @Body() passwordAdminDto: PasswordAdminDto,
+  ) {
+    return this.adminService.updatePassword(+id, passwordAdminDto);
   }
 }

@@ -7,26 +7,24 @@ import {
 } from 'class-validator';
 
 export class PasswordAdminDto {
-  @ApiProperty({
-    example: `password`,
-    description: `Admin password`,
-  })
-  @IsNotEmpty()
-  @IsString()
-  password: string;
-
-  @ApiProperty({ example: `newPassword`, description: `Admin new password` })
+  @ApiProperty({ example: 'Pa$$w0rd', description: 'Admin password' })
   @IsNotEmpty()
   @IsString()
   @MinLength(6)
   @IsStrongPassword()
-  newPassword: string;
+  password: string;
 
-  @ApiProperty({
-    example: `confirm_password`,
-    description: `Confirm password`,
-  })
+  @ApiProperty({ example: 'newPassword', description: 'Admin new password' })
   @IsNotEmpty()
   @IsString()
+  @MinLength(6)
+  @IsStrongPassword()
+  new_password: string;
+
+  @ApiProperty({ example: 'confirm_password', description: 'Confirm password' })
+  @IsNotEmpty()
+  @IsString()
+  @MinLength(6)
+  @IsStrongPassword()
   confirm_password: string;
 }

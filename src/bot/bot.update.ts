@@ -11,7 +11,7 @@ export class BotUpdate {
     return this.botService.start(ctx);
   }
 
-  @On(`contact`)
+  @On('contact')
   async onContact(@Ctx() ctx: Context) {
     return this.botService.contact(ctx);
   }

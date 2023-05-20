@@ -14,11 +14,13 @@ import { CreateUserDto } from 'src/users/dto/create-user.dto';
 import { LoginUserDto } from 'src/users/dto/login-user.dto';
 import { v4 as uuidv4 } from 'uuid';
 import { MailService } from 'src/mail/mail.service';
+import { UsersService } from '../users/users.service';
 
 @Injectable()
 export class AuthService {
   constructor(
     @InjectModel(User) private readonly userModel: typeof User,
+    private readonly userService: UsersService,
     private readonly jwtService: JwtService,
     private readonly mailService: MailService,
   ) {}
@@ -26,8 +28,8 @@ export class AuthService {
   async signup(createUserDto: CreateUserDto, res: Response) {
     const { email, password, confirm_password } = createUserDto;
 
-    const existUser = await this.isExistUser({ email });
-    if (existUser)
+    const user = await this.userService.findByEmail(email);
+    if (user)
       throw new BadRequestException('User with that email is already exist!');
 
     if (password !== confirm_password)
@@ -61,7 +63,7 @@ export class AuthService {
   async signin(loginUserDto: LoginUserDto, res: Response) {
     const { email, password } = loginUserDto;
 
-    const user = await this.isExistUser({ email });
+    const user = await this.userService.findByEmail(email);
     if (!user)
       throw new UnauthorizedException('Email is wrong or User not registered');
 
@@ -89,7 +91,7 @@ export class AuthService {
     res.clearCookie('refresh_token');
 
     const response = {
-      user: this.getUserField(updatedUser[1][0]),
+      user: this.userService.getUserField(updatedUser[1][0]),
       message: 'User have signed out successfully!',
     };
     return response;
@@ -100,10 +102,7 @@ export class AuthService {
     if (user_id !== +decodedToken['id'])
       throw new BadGatewayException('User id wrong, please try again');
 
-    const user = await this.userModel.findOne({
-      where: { id: user_id },
-      include: { all: true },
-    });
+    const user = await this.userService.findById(user_id);
     if (!user || !user.refresh_token)
       throw new BadGatewayException('User not found');
 
@@ -115,13 +114,6 @@ export class AuthService {
       message: 'User token refreshed',
     };
     return response;
-  }
-
-  async isExistUser({ email }: { email: string }): Promise<User> {
-    return await this.userModel.findOne({
-      where: { email },
-      include: { all: true },
-    });
   }
 
   async getResponse(user: User, res: Response) {
@@ -140,7 +132,7 @@ export class AuthService {
       httpOnly: true,
     });
 
-    return { user: this.getUserField(updatedUser[1][0]), tokens };
+    return { user: this.userService.getUserField(updatedUser[1][0]), tokens };
   }
 
   async getPairsOfTokens(user: User): Promise<any> {
@@ -163,19 +155,5 @@ export class AuthService {
     ]);
 
     return { access_token, refresh_token };
-  }
-
-  getUserField(user: User) {
-    return {
-      id: user.id,
-      first_name: user.first_name,
-      last_name: user.last_name,
-      username: user.username,
-      email: user.email,
-      phone: user.phone,
-      telegram_link: user.telegram_link,
-      user_photo: user.user_photo,
-      birthday: user.birthday,
-    };
   }
 }

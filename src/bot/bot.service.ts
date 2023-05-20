@@ -26,7 +26,7 @@ export class BotService {
         username: ctx.from.username,
       });
       await ctx.reply(
-        `Iltimos, <b>"Tel raqamni yuborish"</b> tugmasini bosing!`,
+        'Iltimos, <b>"Tel raqamni yuborish"</b> tugmasini bosing!',
         {
           parse_mode: 'HTML',
           ...Markup.keyboard([
@@ -38,7 +38,7 @@ export class BotService {
       );
     } else if (!user.dataValues.status) {
       await ctx.reply(
-        `Iltimos, <b>"Tel raqamni yuborish"</b> tugmasini bosing!`,
+        'Iltimos, <b>"Tel raqamni yuborish"</b> tugmasini bosing!',
         {
           parse_mode: 'HTML',
           ...Markup.keyboard([
@@ -68,14 +68,14 @@ export class BotService {
       });
 
       if (!user) {
-        await ctx.reply(`Iltimos, <b>Start</b> tugmasini bosing!`, {
+        await ctx.reply('Iltimos, <b>Start</b> tugmasini bosing!', {
           parse_mode: 'HTML',
           ...Markup.keyboard([[Markup.button.contactRequest('/Start')]])
             .oneTime()
             .resize(),
         });
       } else if (ctx.message.contact.user_id !== userId) {
-        await ctx.reply(`Iltimos, o'zingizni raqamingizni yuboring!`, {
+        await ctx.reply("Iltimos, o'zingizni raqamingizni yuboring!", {
           parse_mode: 'HTML',
           ...Markup.removeKeyboard(),
         });
@@ -90,7 +90,7 @@ export class BotService {
           { where: { user_id: userId }, returning: true },
         );
 
-        await ctx.reply(`Tabriklamiz, ro'yxatdan o'tdingiz!`, {
+        await ctx.reply("Tabriklamiz, ro'yxatdan o'tdingiz!", {
           parse_mode: 'HTML',
           ...Markup.removeKeyboard(),
         });
@@ -112,7 +112,7 @@ export class BotService {
         },
         { where: { user_id: userId } },
       );
-      await ctx.reply(`Botdan chiqib ketdingiz!`, {
+      await ctx.reply('Botdan chiqib ketdingiz!', {
         parse_mode: 'HTML',
         ...Markup.keyboard(['/start']).oneTime().resize(),
       });

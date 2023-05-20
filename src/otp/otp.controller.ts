@@ -1,42 +1,37 @@
 import {
   Controller,
-  Get,
   Post,
   Body,
-  Patch,
-  Param,
-  Delete,
+  HttpCode,
+  HttpStatus,
+  Res,
 } from '@nestjs/common';
 import { OtpService } from './otp.service';
-import { CreateOtpDto } from './dto/create-otp.dto';
-import { UpdateOtpDto } from './dto/update-otp.dto';
+import { ApiOperation, ApiResponse } from '@nestjs/swagger';
+import { Otp } from './models/otp.model';
+import { PhoneUserDto } from '../users/dto/phone-user.dto';
+import { VerifyOtpDto } from '../users/dto/verify-otp.dto';
+import { Response } from 'express';
 
 @Controller('otp')
 export class OtpController {
   constructor(private readonly otpService: OtpService) {}
 
-  @Post()
-  create(@Body() createOtpDto: CreateOtpDto) {
-    return this.otpService.create(createOtpDto);
+  @ApiOperation({ summary: 'Send OTP' })
+  @ApiResponse({ status: 200, type: Otp })
+  @HttpCode(HttpStatus.OK)
+  // @UseGuards(AdminGuard)
+  @Post('send-otp/:id')
+  newOtp(@Body() phoneUserDto: PhoneUserDto) {
+    return this.otpService.newOTP(phoneUserDto);
   }
 
-  @Get()
-  findAll() {
-    return this.otpService.findAll();
-  }
-
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.otpService.findOne(+id);
-  }
-
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateOtpDto: UpdateOtpDto) {
-    return this.otpService.update(+id, updateOtpDto);
-  }
-
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.otpService.remove(+id);
+  @ApiOperation({ summary: 'Verify OTP' })
+  @Post('/verify')
+  verifyOtp(
+    @Body() verifyOtpDto: VerifyOtpDto,
+    @Res({ passthrough: true }) res: Response,
+  ): any {
+    return this.otpService.verifyOtp(verifyOtpDto, res);
   }
 }
