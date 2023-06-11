@@ -134,21 +134,21 @@ export class UsersService {
     return response;
   }
 
-  async findById(id: number): Promise<User> {
+  async findById(id: number): Promise<User | null> {
     return await this.userModel.findOne({
       where: { id },
       include: { all: true },
     });
   }
 
-  async findByEmail(email: string): Promise<User> {
+  async findByEmail(email: string): Promise<User | null> {
     return await this.userModel.findOne({
       where: { email },
       include: { all: true },
     });
   }
 
-  async findByPhone(phone: string): Promise<User> {
+  async findByPhone(phone: string): Promise<User | null> {
     return await this.userModel.findOne({
       where: { phone },
       include: { all: true },

@@ -1,12 +1,12 @@
-import { TelegrafModule } from 'nestjs-telegraf';
-import { BOT_NAME } from '../constants/app.constants';
+import { TelegrafModuleOptions } from 'nestjs-telegraf';
 import { BotModule } from '../bot/bot.module';
+import { ConfigService } from '@nestjs/config';
 
-export const getTelegrafConfig: TelegrafModule = {
-  botName: BOT_NAME,
-  useFactory: () => ({
-    token: process.env.BOT_TOKEN,
-    middlewares: [],
-    include: [BotModule],
-  }),
-};
+export const getTelegrafConfig = async (
+  configService: ConfigService,
+): Promise<TelegrafModuleOptions> => ({
+  token: configService.get<string>('BOT_TOKEN'),
+  botName: configService.get<string>('BOT_NAME'),
+  middlewares: [],
+  include: [BotModule],
+});

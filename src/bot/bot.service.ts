@@ -3,13 +3,14 @@ import { InjectModel } from '@nestjs/sequelize';
 import { InjectBot } from 'nestjs-telegraf';
 import { Context, Markup, Telegraf } from 'telegraf';
 import { Bot } from './models/bot.model';
-import { BOT_NAME } from 'src/constants/app.constants';
 
 @Injectable()
 export class BotService {
   constructor(
-    @InjectModel(Bot) private botModel: typeof Bot,
-    @InjectBot(BOT_NAME) private readonly bot: Telegraf<Context>,
+    @InjectModel(Bot)
+    private botModel: typeof Bot,
+    @InjectBot(process.env.BOT_NAME)
+    private readonly bot: Telegraf<Context>,
   ) {}
 
   async start(ctx: Context) {

@@ -1,5 +1,5 @@
 import { Module } from '@nestjs/common';
-import { ConfigModule } from '@nestjs/config';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 import { SequelizeModule } from '@nestjs/sequelize';
 import { UsersModule } from './users/users.module';
 import { StadiumsModule } from './stadiums/stadiums.module';
@@ -28,9 +28,17 @@ import { getTelegrafConfig } from './config/telegraf.config';
 
 @Module({
   imports: [
-    TelegrafModule.forRootAsync(getTelegrafConfig),
-    ConfigModule.forRoot(getFilePathConfig),
-    SequelizeModule.forRoot(getSequelizeConfig),
+    ConfigModule.forRoot(getFilePathConfig()),
+    SequelizeModule.forRootAsync({
+      imports: [ConfigModule],
+      useFactory: getSequelizeConfig,
+      inject: [ConfigService],
+    }),
+    TelegrafModule.forRootAsync({
+      imports: [ConfigModule],
+      useFactory: getTelegrafConfig,
+      inject: [ConfigService],
+    }),
     UsersModule,
     StadiumsModule,
     CategoriesModule,

@@ -7,11 +7,16 @@ import { User } from 'src/users/models/user.model';
 import { MailModule } from 'src/mail/mail.module';
 import { UsersModule } from '../users/users.module';
 import { getJWTConfig } from '../config/jwt.config';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 
 @Module({
   imports: [
     SequelizeModule.forFeature([User]),
-    JwtModule.register(getJWTConfig),
+    JwtModule.registerAsync({
+      imports: [ConfigModule],
+      useFactory: getJWTConfig,
+      inject: [ConfigService],
+    }),
     UsersModule,
     MailModule,
   ],

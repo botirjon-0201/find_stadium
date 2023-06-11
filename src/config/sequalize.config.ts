@@ -1,13 +1,16 @@
+import { ConfigService } from '@nestjs/config';
 import { SequelizeModuleOptions } from '@nestjs/sequelize';
 
-export const getSequelizeConfig: SequelizeModuleOptions = {
+export const getSequelizeConfig = async (
+  configService: ConfigService,
+): Promise<SequelizeModuleOptions> => ({
   dialect: 'postgres',
-  host: process.env.POSTGRES_HOST,
-  port: Number(process.env.POSTGRES_PORT),
-  username: process.env.POSTGRES_USER,
-  password: process.env.POSTGRES_PASSWORD,
-  database: process.env.POSTGRES_DB,
+  host: configService.get<string>('POSTGRES_HOST'),
+  port: configService.get<number>('POSTGRES_PORT'),
+  username: configService.get<string>('POSTGRES_USER'),
+  password: configService.get<string>('POSTGRES_PASSWORD'),
+  database: configService.get<string>('POSTGRES_DB'),
   autoLoadModels: true,
   synchronize: true,
   logging: false,
-};
+});

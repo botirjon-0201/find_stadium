@@ -5,11 +5,16 @@ import { SequelizeModule } from '@nestjs/sequelize';
 import { Admin } from './models/admin.model';
 import { JwtModule } from '@nestjs/jwt';
 import { getJWTConfig } from '../config/jwt.config';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 
 @Module({
   imports: [
     SequelizeModule.forFeature([Admin]),
-    JwtModule.register(getJWTConfig),
+    JwtModule.registerAsync({
+      imports: [ConfigModule],
+      useFactory: getJWTConfig,
+      inject: [ConfigService],
+    }),
   ],
   controllers: [AdminController],
   providers: [AdminService],
