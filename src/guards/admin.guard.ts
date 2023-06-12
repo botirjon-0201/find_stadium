@@ -6,34 +6,34 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
+import { Request } from 'express';
 import { Admin } from 'src/admin/models/admin.model';
 
 @Injectable()
 export class AdminGuard implements CanActivate {
   constructor(private readonly jwtService: JwtService) {}
 
-  canActivate(context: ExecutionContext) {
-    const req = context.switchToHttp().getRequest();
-    const authHeader = req.headers.authorization;
+  async canActivate(context: ExecutionContext): Promise<boolean> {
+    const request = context.switchToHttp().getRequest();
+    const token = this.extractTokenFromHeader(request);
+    if (!token) throw new UnauthorizedException('Admin unauthorized');
 
-    if (!authHeader) throw new UnauthorizedException(`Admin unauthorized`);
-    const [bearer, token] = authHeader.split(' ');
-
-    if (bearer !== `Bearer` || !token)
-      throw new UnauthorizedException(`Admin unauthorized`);
-
-    async function verify(token: string, jwtService: JwtService) {
-      const admin: Partial<Admin> = await jwtService.verify(token, {
+    try {
+      const admin: Partial<Admin> = await this.jwtService.verifyAsync(token, {
         secret: process.env.ACCESS_TOKEN_KEY,
       });
-
-      if (!admin) throw new UnauthorizedException(`Invalid token`);
+      if (!admin) throw new UnauthorizedException('Invalid token');
       if (!admin.is_active)
-        throw new BadRequestException(`Admin is not active`);
-
-      return true;
+        throw new BadRequestException('Admin is not active');
+      request['user'] = admin;
+    } catch {
+      throw new UnauthorizedException('Admin unauthorized');
     }
+    return true;
+  }
 
-    return verify(token, this.jwtService);
+  private extractTokenFromHeader(request: Request): string | undefined {
+    const [type, token] = request.headers.authorization?.split(' ') ?? [];
+    return type === 'Bearer' ? token : undefined;
   }
 }

@@ -7,34 +7,36 @@ import {
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { Admin } from '../admin/models/admin.model';
+import { Request } from 'express';
 
 @Injectable()
 export class SuperAdminGuard implements CanActivate {
   constructor(private readonly jwtService: JwtService) {}
 
-  canActivate(context: ExecutionContext) {
-    const req = context.switchToHttp().getRequest();
-    const authHeader = req.headers.authorization;
+  async canActivate(context: ExecutionContext): Promise<boolean> {
+    const request = context.switchToHttp().getRequest();
+    const token = this.extractTokenFromHeader(request);
+    if (!token) throw new UnauthorizedException('Admin unauthorized');
 
-    if (!authHeader) throw new UnauthorizedException(`Ruxsat etilmagan admin`);
-    const [bearer, token] = authHeader.split(' ');
-
-    if (bearer !== `Bearer` || !token)
-      throw new UnauthorizedException(`Ruxsat etilmagan admin`);
-
-    async function verify(token: string, jwtService: JwtService) {
-      const superAdmin: Partial<Admin> = await jwtService.verify(token, {
-        secret: process.env.ACCESS_TOKEN_KEY,
-      });
-
-      if (!superAdmin) throw new UnauthorizedException(`Invalid token`);
-
+    try {
+      const superAdmin: Partial<Admin> = await this.jwtService.verifyAsync(
+        token,
+        { secret: process.env.ACCESS_TOKEN_KEY },
+      );
+      if (!superAdmin) throw new UnauthorizedException('Invalid token');
       if (!superAdmin.is_creator)
-        throw new BadRequestException(`Admin yaratish huquqiga ega emas`);
-
-      return true;
+        throw new BadRequestException(
+          'Admin does not have permission to create',
+        );
+      request['user'] = superAdmin;
+    } catch {
+      throw new UnauthorizedException('Admin unauthorized');
     }
+    return true;
+  }
 
-    return verify(token, this.jwtService);
+  private extractTokenFromHeader(request: Request): string | undefined {
+    const [type, token] = request.headers.authorization?.split(' ') ?? [];
+    return type === 'Bearer' ? token : undefined;
   }
 }

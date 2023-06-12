@@ -5,7 +5,7 @@ export const getSwaggerConfig = new DocumentBuilder()
   .setDescription(`Mini project for stadium finder`)
   .setVersion(`1.0.0`)
   .addTag(`NodeJS, NestJS, Postgres, Sequelize, JWT, Swagger`)
-  .setBasePath('api')
+  .addServer('api')
   .addBearerAuth(
     {
       type: 'http',
